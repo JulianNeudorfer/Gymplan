@@ -1,9 +1,11 @@
-const CACHE_NAME = 'gymplan-v1';
+const CACHE_NAME = 'gymplan-v2';
+
 const ASSETS = [
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/gymplan/',
+  '/gymplan/index.html',
+  '/gymplan/manifest.json',
+  '/gymplan/icon-192.png',
+  '/gymplan/icon-512.png',
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap'
 ];
 
@@ -12,8 +14,12 @@ self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(ASSETS).catch(() => {
-        // If Google Fonts fails (offline), continue anyway
-        return cache.addAll(['/index.html', '/manifest.json']);
+        // fallback if fonts fail
+        return cache.addAll([
+          '/gymplan/',
+          '/gymplan/index.html',
+          '/gymplan/manifest.json'
+        ]);
       });
     })
   );
@@ -24,7 +30,11 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(
+        keys
+          .filter(k => k !== CACHE_NAME)
+          .map(k => caches.delete(k))
+      )
     )
   );
   self.clients.claim();
@@ -35,19 +45,20 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
-      return fetch(e.request).then(response => {
-        // Cache successful GET requests
-        if (e.request.method === 'GET' && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        // Offline fallback
-        if (e.request.destination === 'document') {
-          return caches.match('/index.html');
-        }
-      });
+
+      return fetch(e.request)
+        .then(response => {
+          if (e.request.method === 'GET' && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          }
+          return response;
+        })
+        .catch(() => {
+          if (e.request.destination === 'document') {
+            return caches.match('/gymplan/index.html');
+          }
+        });
     })
   );
 });
