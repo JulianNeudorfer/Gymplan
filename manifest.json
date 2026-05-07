@@ -1,6 +1,6 @@
 {
   "name": "GymPlan – Julian",
-  "short_name": "GymPlan",
+  "short_name": "gymplan",
   "description": "Dein persönlicher Trainingsplan",
   "start_url": "/gymplan/",
   "scope": "/gymplan/",
