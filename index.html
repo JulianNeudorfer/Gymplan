@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>GymPlan</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="GymPlan"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="theme-color" content="#1a1a1a" id="theme-meta"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    input,select,textarea{font-size:16px!important;-webkit-text-size-adjust:100%}
+    :root{
+      --bg:#f5f5f3;--surface:#fff;--border:#e8e8e4;--text:#1a1a1a;--muted:#8a8a85;
+      --green:#2d7a4f;--green-light:#eaf4ee;
+      --user-primary:#5b9bd5;--user-light:#e8f4fd;--user-border:#a8d0f0;--user-dark:#2e75b6;
+      --push-bg:#ff8c00;--push-border:#e07000;--push-color:#7a3500;--push-badge:#ffb347;
+      --pull-bg:#1a7fd4;--pull-border:#0f5fa0;--pull-color:#072d52;--pull-badge:#5aaff0;
+      --beine-bg:#18a84a;--beine-border:#0f7a34;--beine-color:#063d1a;--beine-badge:#4dcc7a;
+      --rest-bg:#e8e8e6;--rest-border:#d0d0cc;--rest-color:#aaaaaa;--rest-badge:#dedede;
+      --dehnen-bg:#f8f0fb;--dehnen-border:#d4b0e8;--dehnen-color:#6b2d8a;--dehnen-badge:#ead4f8;
+    }
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1.5rem 1rem 5rem}
+
+    /* ── UPDATE BANNER ── */
+    #update-banner{display:none;position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;border-radius:14px;padding:.65rem 1rem;font-size:.8rem;display:none;align-items:center;gap:.75rem;z-index:600;box-shadow:0 4px 20px rgba(0,0,0,.3);max-width:90vw}
+    #update-banner.visible{display:flex}
+    .update-label{font-weight:500}
+    .update-btn{background:#4dcc7a;color:#063d1a;border:none;border-radius:99px;padding:.3rem .8rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+
+    /* ── NFC BANNER ── */
+    #checkin-banner{display:none;position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);color:white;padding:.75rem 1.25rem;align-items:center;gap:.75rem;z-index:500;box-shadow:0 2px 20px rgba(0,0,0,.35)}
+    #checkin-banner.visible{display:flex}
+    body.checkin-active{padding-top:calc(1.5rem + 54px)}
+    .checkin-dot{width:10px;height:10px;border-radius:50%;background:#4dcc7a;flex-shrink:0;animation:pdot 1.5s infinite}
+    @keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
+    .checkin-info{flex:1;min-width:60px}
+    .checkin-label{font-size:.78rem;font-weight:600}
+    .checkin-meta{font-size:.62rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.55)}
+    #checkin-timer{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:600;color:#4dcc7a;letter-spacing:.05em;min-width:58px;text-align:center}
+    .checkin-end-btn{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);color:white;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;padding:.38rem .85rem;border-radius:99px;cursor:pointer;flex-shrink:0}
+
+    /* ── USER SELECTION ── */
+    #user-screen{display:none;position:fixed;inset:0;background:#f5f5f3;z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:1.75rem}
+    #user-screen.visible{display:flex}
+    .user-screen-title{font-size:1.9rem;font-weight:600;letter-spacing:-.03em}
+    .user-screen-title span{color:var(--muted);font-weight:300}
+    .user-screen-sub{font-size:.9rem;color:var(--muted);margin-top:-1rem}
+    .user-cards{display:flex;gap:1.25rem;width:100%;max-width:380px}
+    .user-card{flex:1;border-radius:22px;border:2.5px solid transparent;padding:2rem 1rem 1.75rem;display:flex;flex-direction:column;align-items:center;gap:.7rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.07)}
+    .user-card:active{transform:scale(.96)}
+    .user-card-julian{background:#e8f4fd;border-color:#a8d0f0}
+    .user-card-julian:hover{background:#d0e8f8}
+    .user-card-christina{background:#fde8f2;border-color:#f0a8cc}
+    .user-card-christina:hover{background:#fad0e6}
+    .user-card-emoji{font-size:3rem}
+    .user-card-name{font-size:1.15rem;font-weight:600}
+    .user-card-julian .user-card-name{color:#2e75b6}
+    .user-card-christina .user-card-name{color:#c0446e}
+
+    /* ── APP ── */
+    #app{display:none}
+    #app.visible{display:block}
+
+    /* ── HEADER ── */
+    header{max-width:800px;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--border);padding-bottom:1.25rem;gap:1rem;flex-wrap:wrap}
+    header h1{font-size:1.4rem;font-weight:600;letter-spacing:-.03em}
+    header h1 span{color:var(--muted);font-weight:300}
+    .user-chip{display:flex;align-items:center;gap:.45rem;background:var(--user-light);border:1.5px solid var(--user-border);border-radius:99px;padding:.28rem .7rem;cursor:pointer}
+    .user-chip-name{font-size:.76rem;font-weight:600;color:var(--user-dark);font-family:'DM Mono',monospace}
+    .gym-counter{display:flex;align-items:center;gap:.45rem;background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.3rem .8rem}
+    .gym-counter-num{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600}
+    .gym-counter-label{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);line-height:1.1}
+    .menu-wrap{position:relative}
+    .menu-btn{font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--text);background:var(--surface);border:1.5px solid var(--border);padding:.4rem 1rem;border-radius:99px;cursor:pointer}
+    .menu-dropdown{display:none;position:absolute;top:calc(100% + .5rem);right:0;width:200px;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:200;overflow:hidden}
+    .menu-dropdown.open{display:block}
+    .menu-item{padding:.75rem 1rem;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:.6rem;transition:background .15s;border-bottom:1px solid var(--border)}
+    .menu-item:last-child{border-bottom:none}
+    .menu-item:hover{background:var(--bg)}
+
+    /* ── PANELS ── */
+    .overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.2)}
+    .overlay.open{display:block}
+    .panel{display:none;position:fixed;top:0;right:0;height:100vh;width:340px;max-width:95vw;background:var(--surface);border-left:1.5px solid var(--border);box-shadow:-8px 0 30px rgba(0,0,0,.1);z-index:300;overflow-y:auto;flex-direction:column}
+    .panel.open{display:flex}
+    .panel-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+    .panel-title{font-size:.85rem;font-weight:600;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .panel-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)}
+    .panel-body{padding:.5rem 0;flex:1}
+
+    /* History */
+    .history-user-tab{display:flex;border-bottom:1px solid var(--border)}
+    .history-user-btn{flex:1;padding:.6rem;font-size:.75rem;font-family:'DM Mono',monospace;font-weight:600;text-align:center;cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted)}
+    .history-user-btn.active-julian{color:#2e75b6;border-bottom-color:#5b9bd5;background:#e8f4fd}
+    .history-user-btn.active-christina{color:#c0446e;border-bottom-color:#e8739a;background:#fde8f2}
+    .history-week{padding:.75rem 1.25rem;border-bottom:1px solid var(--border)}
+    .history-week-label{font-size:.8rem;font-weight:500;margin-bottom:.3rem}
+    .history-week-tags{display:flex;gap:.3rem;flex-wrap:wrap}
+    .history-tag{font-size:.6rem;font-family:'DM Mono',monospace;padding:.1rem .4rem;border-radius:99px}
+    .history-empty{padding:1.5rem;font-size:.8rem;color:var(--muted);text-align:center}
+
+    /* Graph */
+    .graph-ex-select{font-size:16px;border:1.5px solid var(--border);border-radius:8px;padding:.3rem .6rem;background:var(--bg);color:var(--text);outline:none;width:calc(100% - 2.5rem);margin:.75rem 1.25rem 0;display:block;font-family:'DM Mono',monospace}
+    .graph-canvas-wrap{padding:.75rem 1.25rem 0}
+    canvas#progress-chart{width:100%!important}
+    .graph-empty{font-size:.8rem;color:var(--muted);text-align:center;padding:2rem 1.25rem}
+    .graph-legend{display:flex;gap:1rem;flex-wrap:wrap;padding:.5rem 1.25rem}
+    .graph-legend-item{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted);display:flex;align-items:center;gap:.3rem}
+    .graph-legend-dot{width:8px;height:8px;border-radius:50%}
+
+    /* NFC History */
+    .checkin-history-item{padding:.65rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+    .checkin-history-dot{width:8px;height:8px;border-radius:50%;background:#4dcc7a;flex-shrink:0}
+    .checkin-history-info{flex:1}
+    .checkin-history-date{font-size:.78rem;font-weight:500}
+    .checkin-history-time{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
+    .checkin-history-dur{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:600;color:var(--green)}
+
+    /* Plan editor */
+    .plan-tabs{display:flex;border-bottom:1px solid var(--border)}
+    .plan-tab{flex:1;padding:.65rem .5rem;font-size:.72rem;font-family:'DM Mono',monospace;font-weight:600;text-align:center;cursor:pointer;border:none;border-bottom:2px solid transparent;color:var(--muted);background:none}
+    .plan-tab.active-push{color:var(--push-color);border-bottom-color:#ff8c00;background:#ffe8d0}
+    .plan-tab.active-pull{color:var(--pull-color);border-bottom-color:#1a7fd4;background:#ddeaf8}
+    .plan-tab.active-beine{color:var(--beine-color);border-bottom-color:#18a84a;background:#d4eedd}
+    .plan-content{display:none;padding:.75rem 0}
+    .plan-content.active{display:block}
+    .plan-section-name{font-size:.62rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.4rem 1.25rem .1rem;display:block}
+    .plan-exercise-row{display:flex;align-items:center;gap:.4rem;padding:.3rem 1.25rem;border-bottom:1px solid rgba(0,0,0,.05)}
+    .plan-ex-input{flex:1;font-size:16px!important;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);padding:.1rem .25rem;border-radius:4px}
+    .plan-ex-input:focus{background:var(--bg)}
+    .plan-del-btn{color:#ccc;background:none;border:none;cursor:pointer;padding:.15rem .3rem;border-radius:4px;font-size:.8rem}
+    .plan-del-btn:hover{color:#e05050}
+    .plan-add-ex{display:flex;margin:.4rem 1.25rem 0;gap:.4rem}
+    .plan-add-ex input{flex:1;font-size:16px!important;border:1.5px solid var(--border);border-radius:8px;padding:.3rem .6rem;outline:none;font-family:'DM Sans',sans-serif;background:var(--bg)}
+    .plan-add-ex button{font-size:.75rem;border:1.5px solid var(--border);border-radius:8px;padding:.3rem .7rem;background:var(--surface);cursor:pointer;font-family:'DM Mono',monospace;color:var(--muted)}
+    .plan-section-block{margin-bottom:.6rem}
+    .plan-copy-row{padding:.75rem 1.25rem 0;display:flex;gap:.5rem}
+    .plan-copy-btn{flex:1;padding:.5rem;border-radius:8px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer}
+    .plan-copy-btn:hover{border-color:var(--text);color:var(--text)}
+    .plan-save-row{padding:.75rem 1.25rem 0}
+    .plan-save-btn{width:100%;padding:.6rem;border-radius:10px;border:none;background:var(--text);color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
+
+    /* Progress */
+    #progress-bar-wrap{max-width:800px;margin:0 auto .5rem;background:var(--border);border-radius:99px;height:3px;overflow:hidden}
+    #progress-bar{height:100%;background:var(--user-primary);border-radius:99px;transition:width .5s ease;width:0%}
+    #progress-info{max-width:800px;margin:0 auto 1.5rem;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);text-align:right}
+    .done-banner{display:none;max-width:800px;margin:0 auto 1.5rem;background:var(--green-light);border:1.5px solid #b6dfc7;border-radius:12px;padding:.9rem 1.25rem;font-size:.88rem;color:var(--green);font-weight:500}
+
+    /* Week grid */
+    .week-grid{max-width:800px;margin:0 auto 1.75rem;display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem}
+    .week-dot{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.45rem .2rem;border-radius:10px;border:1.5px solid var(--border);background:var(--surface)}
+    .week-dot.today{border-color:var(--user-primary)!important;border-width:2px!important}
+    .week-dot-label{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase}
+    .week-dot-badge{font-size:.55rem;font-family:'DM Mono',monospace;font-weight:600;padding:.1rem .3rem;border-radius:99px}
+    .week-dot-check{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center}
+    .week-dot-check.done{background:var(--green);border-color:var(--green)}
+
+    /* Day cards */
+    .day-card{max-width:800px;margin:0 auto .75rem;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s}
+    .day-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+    .day-card.type-push{background:var(--push-bg);border-color:var(--push-border)}
+    .day-card.type-pull{background:var(--pull-bg);border-color:var(--pull-border)}
+    .day-card.type-beine{background:var(--beine-bg);border-color:var(--beine-border)}
+    .day-card.type-rest{background:var(--rest-bg);border-color:var(--rest-border);opacity:.4}
+    .day-card.type-rest:hover{opacity:.55;box-shadow:none}
+    .day-card.type-push .day-name,.day-card.type-push .day-date,.day-card.type-push .toggle-btn,
+    .day-card.type-pull .day-name,.day-card.type-pull .day-date,.day-card.type-pull .toggle-btn,
+    .day-card.type-beine .day-name,.day-card.type-beine .day-date,.day-card.type-beine .toggle-btn{color:rgba(255,255,255,.92)}
+    .day-card.done{filter:brightness(.88);opacity:.78}
+    .day-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;cursor:pointer;user-select:none}
+    .day-header-left{display:flex;align-items:center;gap:.8rem}
+    .day-check{width:23px;height:23px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15);background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s}
+    .day-card.done .day-check{background:var(--green);border-color:var(--green)}
+    .day-check svg{display:none}
+    .day-card.done .day-check svg{display:block}
+    .day-title-wrap{display:flex;flex-direction:column;gap:.08rem}
+    .day-name{font-weight:600;font-size:.92rem}
+    .day-card.done .day-name{color:var(--muted);text-decoration:line-through}
+    .day-date{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
+    .day-right{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+    .type-selector{display:flex;gap:.25rem}
+    .type-btn{font-size:.6rem;font-family:'DM Mono',monospace;font-weight:600;padding:.16rem .45rem;border-radius:99px;border:1.5px solid transparent;background:rgba(255,255,255,.6);cursor:pointer;color:var(--muted)}
+    .type-btn.active-push{background:var(--push-badge);color:var(--push-color);border-color:var(--push-border)}
+    .type-btn.active-pull{background:var(--pull-badge);color:var(--pull-color);border-color:var(--pull-border)}
+    .type-btn.active-beine{background:var(--beine-badge);color:var(--beine-color);border-color:var(--beine-border)}
+    .type-btn.active-rest{background:var(--rest-badge);color:var(--rest-color);border-color:var(--rest-border)}
+    .toggle-btn{font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Mono',monospace;padding:.2rem .3rem}
+    .exercise-list,.rest-body{display:none;border-top:1px solid rgba(0,0,0,.07)}
+    .exercise-list.open,.rest-body.open{display:block}
+    .rest-body{padding:.75rem 1.25rem;font-size:.82rem;color:var(--muted)}
+    .section-label{padding:.55rem 1.25rem .2rem;font-size:.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .exercise-item{display:flex;align-items:center;gap:.5rem;padding:.45rem 1.25rem;border-bottom:1px solid rgba(0,0,0,.06)}
+    .exercise-item:last-child{border-bottom:none}
+    .ex-name{flex:1;font-size:16px!important;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;padding:.12rem .25rem;border-radius:5px;min-width:0}
+    .ex-name:focus{background:rgba(255,255,255,.75)}
+    .ex-fields{display:flex;align-items:center;gap:.2rem;flex-shrink:0}
+    .ex-input{font-family:'DM Mono',monospace;font-size:16px!important;color:var(--text);background:none;border:1px solid transparent;outline:none;text-align:center;padding:.12rem .2rem;border-radius:5px}
+    .ex-input:focus{background:rgba(255,255,255,.85);border-color:rgba(0,0,0,.1)}
+    .ex-input.w-sets{width:34px}.ex-input.w-reps{width:38px}.ex-input.w-kg{width:48px}
+    .ex-sep,.ex-unit{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted)}
+    .exercise-item.skipped .ex-name{color:var(--muted);text-decoration:line-through}
+    .exercise-item.skipped .ex-input,.exercise-item.skipped .ex-sep,.exercise-item.skipped .ex-unit{color:#ccc}
+    .exercise-item.locked .ex-input,.exercise-item.locked .ex-name{pointer-events:none;opacity:.55}
+
+    /* Dehnen */
+    .dehnen-card{max-width:800px;margin:1.5rem auto .75rem;background:var(--dehnen-bg);border:1.5px solid var(--dehnen-border);border-radius:16px;overflow:hidden}
+    .dehnen-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;cursor:pointer;user-select:none}
+    .dehnen-title{font-weight:600;font-size:.92rem;color:var(--dehnen-color)}
+    .dehnen-subtitle{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
+    .dehnen-badge{font-size:.65rem;font-family:'DM Mono',monospace;font-weight:600;background:var(--dehnen-badge);color:var(--dehnen-color);border:1px solid var(--dehnen-border);padding:.18rem .55rem;border-radius:99px}
+    .dehnen-progress{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--dehnen-color);font-weight:600}
+    .dehnen-body{display:none;border-top:1px solid var(--dehnen-border);padding:1rem 1.25rem}
+    .dehnen-body.open{display:block}
+    .dehnen-sessions{display:flex;gap:.75rem;margin-bottom:.75rem}
+    .dehnen-session{flex:1;border:1.5px solid var(--dehnen-border);border-radius:10px;padding:.65rem .75rem;background:rgba(255,255,255,.5);cursor:pointer;text-align:center}
+    .dehnen-session.done{background:var(--dehnen-badge);border-color:var(--dehnen-color)}
+    .dehnen-session-label{font-size:.75rem;font-weight:500;color:var(--dehnen-color)}
+    .dehnen-session-check{font-size:1.1rem;margin-top:.25rem}
+    .dehnen-complete-msg{font-size:.82rem;color:var(--dehnen-color);font-weight:500;text-align:center;margin-top:.5rem;display:none}
+
+    /* Bottom */
+    .autosave-indicator{max-width:800px;margin:.5rem auto 0;font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;padding-right:.25rem;opacity:0;transition:opacity .3s}
+    .autosave-indicator.saving{opacity:1}
+    .autosave-indicator.saved{opacity:1;color:var(--green)}
+    .bottom-row{max-width:800px;margin:1.25rem auto 0;display:flex;gap:.6rem;justify-content:flex-end}
+    .btn-ghost{background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.78rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer}
+    .btn-ghost:hover{border-color:var(--text);color:var(--text)}
+  </style>
+</head>
+<body>
+
+<!-- UPDATE BANNER -->
+<div id="update-banner">
+  <span class="update-label">🆕 Update verfügbar</span>
+  <button class="update-btn" onclick="applyUpdate()">Jetzt aktualisieren</button>
+</div>
+
+<!-- NFC BANNER -->
+<div id="checkin-banner">
+  <div class="checkin-dot"></div>
+  <div class="checkin-info">
+    <div class="checkin-label">Training läuft</div>
+    <div class="checkin-meta">Start: <span id="checkin-start">--:--</span></div>
+  </div>
+  <div id="checkin-timer">00:00</div>
+  <button class="checkin-end-btn" onclick="endCheckin()">✓ Beenden</button>
+</div>
+
+<!-- USER SELECTION -->
+<div id="user-screen" class="visible">
+  <div class="user-screen-title">Gym<span>Plan</span></div>
+  <div class="user-screen-sub">Wer trainiert heute?</div>
+  <div class="user-cards">
+    <div class="user-card user-card-julian" onclick="selectUser('julian')">
+      <div class="user-card-emoji">💪</div>
+      <div class="user-card-name">Julian</div>
+    </div>
+    <div class="user-card user-card-christina" onclick="selectUser('christina')">
+      <div class="user-card-emoji">🌸</div>
+      <div class="user-card-name">Christina</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+  <!-- VERLAUF -->
+  <div class="panel" id="panel-history">
+    <div class="panel-header"><span class="panel-title">📅 Verlauf</span><button class="panel-close" onclick="closeAll()">✕</button></div>
+    <div class="panel-body">
+      <div class="history-user-tab">
+        <button class="history-user-btn active-julian" id="htab-julian" onclick="switchHistTab('julian')">💪 Julian</button>
+        <button class="history-user-btn" id="htab-christina" onclick="switchHistTab('christina')">🌸 Christina</button>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- FORTSCHRITT -->
+  <div class="panel" id="panel-graph">
+    <div class="panel-header"><span class="panel-title">📈 Fortschritt</span><button class="panel-close" onclick="closeAll()">✕</button></div>
+    <div class="panel-body">
+      <select class="graph-ex-select" id="graph-ex-select" onchange="renderGraph()"><option value="">Übung wählen…</option></select>
+      <div class="graph-canvas-wrap"><canvas id="progress-chart"></canvas></div>
+      <div class="graph-empty" id="graph-empty">Wähle eine Übung.</div>
+      <div class="graph-legend" id="graph-legend"></div>
+    </div>
+  </div>
+
+  <!-- TRAININGSPLÄNE -->
+  <div class="panel" id="panel-plans">
+    <div class="panel-header"><span class="panel-title">📋 Trainingspläne</span><button class="panel-close" onclick="closeAll()">✕</button></div>
+    <div class="panel-body" style="padding:0">
+      <div class="plan-tabs">
+        <button class="plan-tab active-push" onclick="switchPlanTab('push')">PUSH</button>
+        <button class="plan-tab" onclick="switchPlanTab('pull')">PULL</button>
+        <button class="plan-tab" onclick="switchPlanTab('beine')">BEINE</button>
+      </div>
+      <div id="plan-push" class="plan-content active"></div>
+      <div id="plan-pull" class="plan-content"></div>
+      <div id="plan-beine" class="plan-content"></div>
+    </div>
+  </div>
+
+  <!-- CHECK-IN VERLAUF -->
+  <div class="panel" id="panel-checkin">
+    <div class="panel-header"><span class="panel-title">🏃 Check-in Verlauf</span><button class="panel-close" onclick="closeAll()">✕</button></div>
+    <div class="panel-body" id="checkin-history-list"><div class="history-empty">Noch keine Check-ins.<br>Scanne deinen NFC Chip!</div></div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <h1>Gym<span>Plan</span></h1>
+      <div class="user-chip" onclick="showUserScreen()">
+        <span id="chip-avatar">💪</span>
+        <span class="user-chip-name" id="chip-name">Julian</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="gym-counter">
+        <span>🏋️</span>
+        <span class="gym-counter-num" id="gym-count">0</span>
+        <div class="gym-counter-label">Gym-<br>Besuche</div>
+      </div>
+      <div class="menu-wrap">
+        <button class="menu-btn" onclick="toggleMenu()">Menü ☰</button>
+        <div class="menu-dropdown" id="menu-dropdown">
+          <div class="menu-item" onclick="openPanel('history')">📅 Verlauf</div>
+          <div class="menu-item" onclick="openPanel('graph')">📈 Fortschritt</div>
+          <div class="menu-item" onclick="openPanel('plans')">📋 Trainingspläne</div>
+          <div class="menu-item" onclick="openPanel('checkin')">🏃 Check-in Verlauf</div>
+          <div class="menu-item" onclick="showUserScreen()">👤 Benutzer wechseln</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <div id="progress-info">0 / 0 Trainingstage</div>
+  <div class="done-banner" id="done-banner">🎉 Mega Woche! Alles erledigt!</div>
+  <div class="week-grid" id="week-grid"></div>
+  <div id="day-cards"></div>
+
+  <div class="dehnen-card" id="dehnen-card">
+    <div class="dehnen-header" onclick="toggleDehnen()">
+      <div><div class="dehnen-title">🧘 Dehnen</div><div class="dehnen-subtitle">2× pro Woche für Abschluss</div></div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span class="dehnen-badge">DEHNEN</span>
+        <span class="dehnen-progress" id="dehnen-progress">0 / 2</span>
+        <button class="toggle-btn" id="toggle-dehnen">↓</button>
+      </div>
+    </div>
+    <div class="dehnen-body" id="dehnen-body">
+      <div class="dehnen-sessions">
+        <div class="dehnen-session" id="dehnen-1" onclick="toggleDehnenSession(1)"><div class="dehnen-session-label">Session 1</div><div class="dehnen-session-check">○</div></div>
+        <div class="dehnen-session" id="dehnen-2" onclick="toggleDehnenSession(2)"><div class="dehnen-session-label">Session 2</div><div class="dehnen-session-check">○</div></div>
+      </div>
+      <div class="dehnen-complete-msg" id="dehnen-complete-msg">✅ Wochenziel erreicht!</div>
+    </div>
+  </div>
+
+  <div class="autosave-indicator" id="autosave-indicator">✓ gespeichert</div>
+  <div class="bottom-row"><button class="btn-ghost" onclick="resetWeek()">Woche zurücksetzen</button></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════
+const DAYS      = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+const DAY_SHORT = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+const T_TYPES   = ['push','pull','beine','rest'];
+
+const USER_THEMES = {
+  julian:    {primary:'#5b9bd5',light:'#e8f4fd',border:'#a8d0f0',dark:'#2e75b6',avatar:'💪',label:'Julian',    theme:'#2e75b6'},
+  christina: {primary:'#e8739a',light:'#fde8f2',border:'#f0a8cc',dark:'#c0446e',avatar:'🌸',label:'Christina', theme:'#c0446e'},
+};
+
+const DEF = {
+  push:  [{section:'Brust',   items:['Bench Press','Butterfly','Schrägbank','Kabel von unten','Kabel von oben']},
+          {section:'Schulter',items:['Smith Machine Press','Seitheben','Hintere Schulter']},
+          {section:'Trizeps', items:['Einhändig (Kabel)','Dips','Doppelgriff (Kabel)']}],
+  pull:  [{section:'Rücken',  items:['Latziehen mit Latgriff','Kreuzheben','Lat mit Bank','SS Unterer Rücken','Klimmzüge']},
+          {section:'Bizeps',  items:['Curl','Maschine','Hammer Curls']}],
+  beine: [{section:'Quadrizeps',     items:['Kniebeugen','Beinpresse','Leg Extension','Ausfallschritte']},
+          {section:'Hamstrings & Po',items:['Rumänisches Kreuzheben','Leg Curl','Hip Thrust']},
+          {section:'Cardio',         items:['Laufband','Fahrrad','Rudergerät']}],
+};
+
+// ═══════════════════════════════════════
+// STATE
+// Key change: exercises stored PER DAY (dayEx[0..6])
+// instead of per type – fixes Christina save bug
+// ═══════════════════════════════════════
+const mkState = () => ({
+  types:       ['push','pull','rest','beine','pull','rest','rest'],
+  done:        [false,false,false,false,false,false,false],
+  dayEx:       {0:null,1:null,2:null,3:null,4:null,5:null,6:null}, // ← FIX: per-day
+  dehnen:      [false,false],
+  gymCount:    0,
+  weekLabel:   wLabel(),
+  customPlans: {push:null,pull:null,beine:null},
+});
+
+let activeUser  = null;
+let prevUser    = null;
+let histViewU   = 'julian';
+let planTab     = 'push';
+let saveTimer   = null;
+let saveUserAt  = null; // tracks which user the pending save belongs to
+
+let uData     = {julian:mkState(), christina:mkState()};
+let uHist     = {julian:[], christina:[]};
+let uSess     = {julian:[], christina:[]};
+let uCheckins = {julian:[], christina:[]};
+
+const S  = () => uData[activeUser];
+const H  = () => uHist[activeUser];
+const SL = () => uSess[activeUser];
+const CL = () => uCheckins[activeUser];
+
+// ═══════════════════════════════════════
+// PERSIST  (per-user, race-condition safe)
+// ═══════════════════════════════════════
+const k = (u,t) => `gp6-${u}-${t}`;
+
+function persist(user) {
+  user = user || activeUser;
+  if (!user) return;
+  localStorage.setItem(k(user,'state'),    JSON.stringify(uData[user]));
+  localStorage.setItem(k(user,'history'),  JSON.stringify(uHist[user]));
+  localStorage.setItem(k(user,'sessions'), JSON.stringify(uSess[user]));
+  localStorage.setItem(k(user,'checkins'), JSON.stringify(uCheckins[user]));
+}
+window.persistAll = () => persist();
+
+function loadAll() {
+  ['julian','christina'].forEach(u => {
+    try { const s=localStorage.getItem(k(u,'state')); if(s){
+      uData[u]=JSON.parse(s);
+      uData[u].customPlans = uData[u].customPlans||{push:null,pull:null,beine:null};
+      uData[u].dehnen      = uData[u].dehnen||[false,false];
+      uData[u].gymCount    = uData[u].gymCount||0;
+      uData[u].weekLabel   = uData[u].weekLabel||wLabel();
+      // Migrate old exercises format → dayEx
+      if (!uData[u].dayEx && uData[u].exercises) {
+        uData[u].dayEx = {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
+      }
+      uData[u].dayEx = uData[u].dayEx||{0:null,1:null,2:null,3:null,4:null,5:null,6:null};
+    }} catch(e){}
+    try { const h=localStorage.getItem(k(u,'history'));  if(h) uHist[u]=JSON.parse(h); } catch(e){}
+    try { const sl=localStorage.getItem(k(u,'sessions')); if(sl) uSess[u]=JSON.parse(sl); } catch(e){}
+    try { const cl=localStorage.getItem(k(u,'checkins')); if(cl) uCheckins[u]=JSON.parse(cl); } catch(e){}
+  });
+}
+
+function archiveWeek() {
+  const st=S(), hist=H(), last=hist[hist.length-1];
+  if (!last || last.weekLabel !== st.weekLabel) {
+    hist.push({weekLabel:st.weekLabel,types:[...st.types],done:[...st.done],
+      dayEx:JSON.parse(JSON.stringify(st.dayEx)),dehnen:[...st.dehnen]});
+    if (hist.length>52) hist.shift();
+  }
+}
+
+// AUTO-SAVE: race-condition safe – tracks which user triggered the save
+function autoSave() {
+  const triggeredBy = activeUser; // capture NOW
+  const ind = document.getElementById('autosave-indicator');
+  ind.textContent='● wird gespeichert…'; ind.className='autosave-indicator saving';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    if (activeUser !== triggeredBy) return; // user switched before save fired – skip
+    collectAll();
+    persist(triggeredBy);
+    ind.textContent='✓ gespeichert'; ind.className='autosave-indicator saved';
+    setTimeout(()=>ind.className='autosave-indicator',2000);
+  }, 600);
+}
+
+function saveNow(user) { // synchronous save, no debounce
+  user = user || activeUser;
+  if (!user) return;
+  clearTimeout(saveTimer);
+  // Collect from DOM only if saving current user
+  if (user === activeUser) collectAll();
+  persist(user);
+}
+
+// ═══════════════════════════════════════
+// USER SELECTION
+// ═══════════════════════════════════════
+function selectUser(user) {
+  // Save previous user's data BEFORE switching (race-condition fix)
+  if (activeUser && activeUser !== user) saveNow(activeUser);
+
+  prevUser   = activeUser;
+  activeUser = user;
+  localStorage.setItem('gp6-active-user', user);
+  applyTheme(user);
+
+  const t = USER_THEMES[user];
+  document.getElementById('chip-avatar').textContent = t.avatar;
+  document.getElementById('chip-name').textContent   = t.label;
+  document.getElementById('user-screen').classList.remove('visible');
+  document.getElementById('app').classList.add('visible');
+
+  loadAll();
+
+  const st = S();
+  if (st.weekLabel !== wLabel()) {
+    archiveWeek();
+    st.done=[false,false,false,false,false,false,false];
+    st.dehnen=[false,false];
+    st.dayEx={0:null,1:null,2:null,3:null,4:null,5:null,6:null};
+    st.weekLabel=wLabel();
+    persist(user);
+  }
+  buildAll();
+  initNFC();
+}
+
+function showUserScreen() {
+  closeAll();
+  saveNow(); // synchronous save before hiding app
+  stopCheckinTimer();
+  document.getElementById('user-screen').classList.add('visible');
+  document.getElementById('app').classList.remove('visible');
+}
+
+function applyTheme(user) {
+  const t=USER_THEMES[user], r=document.documentElement.style;
+  r.setProperty('--user-primary',t.primary);
+  r.setProperty('--user-light',  t.light);
+  r.setProperty('--user-border', t.border);
+  r.setProperty('--user-dark',   t.dark);
+  document.getElementById('theme-meta').content=t.theme;
+}
+
+// ═══════════════════════════════════════
+// NFC CHECK-IN
+// ═══════════════════════════════════════
+let checkinActive=false, checkinStart=null, checkinTimer=null, checkinId=null;
+
+function initNFC() {
+  const p=new URLSearchParams(window.location.search);
+  if (p.get('checkin')==='1') {
+    window.history.replaceState({},'',window.location.pathname);
+    startCheckin();
+  } else {
+    try {
+      const saved=localStorage.getItem('gp6-checkin-active');
+      if (saved) {
+        const d=JSON.parse(saved);
+        if (d.userId===activeUser) {
+          checkinId=d.id; checkinStart=new Date(d.startTime); checkinActive=true;
+          showCheckinBanner(checkinStart); startCheckinTimer(checkinStart);
+        }
+      }
+    } catch(e){}
+  }
+}
+
+function startCheckin() {
+  if (checkinActive) endCheckin(true);
+  checkinStart=new Date(); checkinActive=true; checkinId=Date.now().toString();
+  localStorage.setItem('gp6-checkin-active',JSON.stringify({id:checkinId,userId:activeUser,startTime:checkinStart.toISOString()}));
+  showCheckinBanner(checkinStart); startCheckinTimer(checkinStart);
+}
+
+function endCheckin(silent=false) {
+  if (!checkinActive||!checkinStart) return;
+  const end=new Date(), mins=Math.round((end-checkinStart)/60000);
+  CL().unshift({id:checkinId,userId:activeUser,startTime:checkinStart.toISOString(),endTime:end.toISOString(),duration:mins,
+    date:checkinStart.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    startStr:checkinStart.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}),
+    endStr:end.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'})});
+  if(CL().length>100) CL().pop();
+  localStorage.removeItem('gp6-checkin-active');
+  S().gymCount++;
+  stopCheckinTimer(); hideCheckinBanner(); checkinActive=false; checkinStart=null; checkinId=null;
+  saveNow(); buildAll();
+  if(!silent) alert(`🏋️ Training beendet!\nDauer: ${Math.floor(mins/60)}h ${mins%60}min`);
+}
+window.endCheckin=endCheckin;
+
+function startCheckinTimer(from) { stopCheckinTimer(); tickCI(from); checkinTimer=setInterval(()=>tickCI(from),1000); }
+function stopCheckinTimer()      { if(checkinTimer){clearInterval(checkinTimer);checkinTimer=null;} }
+function tickCI(from)            { const s=Math.floor((Date.now()-from)/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60,el=document.getElementById('checkin-timer'); if(el)el.textContent=h>0?`${h}:${p2(m)}:${p2(sc)}`:`${p2(m)}:${p2(sc)}`; }
+function showCheckinBanner(from) { const b=document.getElementById('checkin-banner'),s=document.getElementById('checkin-start'); if(b)b.classList.add('visible'); if(s)s.textContent=from.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}); document.body.classList.add('checkin-active'); }
+function hideCheckinBanner()     { const b=document.getElementById('checkin-banner'); if(b)b.classList.remove('visible'); document.body.classList.remove('checkin-active'); const t=document.getElementById('checkin-timer'); if(t)t.textContent='00:00'; }
+
+function renderCheckinHistory() {
+  const el=document.getElementById('checkin-history-list'), list=CL();
+  if(!list.length){el.innerHTML='<div class="history-empty">Noch keine Check-ins.<br>Scanne deinen NFC Chip!</div>';return;}
+  el.innerHTML=list.map(c=>`<div class="checkin-history-item"><div class="checkin-history-dot"></div><div class="checkin-history-info"><div class="checkin-history-date">${c.date}</div><div class="checkin-history-time">${c.startStr} – ${c.endStr}</div></div><div class="checkin-history-dur">${Math.floor(c.duration/60)}h ${c.duration%60}min</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════
+function buildAll() {
+  if(!activeUser) return;
+  buildWeekGrid(); buildDayCards(); updateProgress();
+  document.getElementById('gym-count').textContent=S().gymCount;
+  updateDehnenUI();
+}
+window.buildAll=buildAll;
+
+function buildWeekGrid() {
+  const g=document.getElementById('week-grid'); g.innerHTML='';
+  DAYS.forEach((_,i)=>{ const t=S().types[i],d=S().done[i],c=tc(t);
+    g.innerHTML+=`<div class="week-dot ${isToday(i)?'today':''}" style="background:${c.bg};border-color:${c.bd}">
+      <span class="week-dot-label">${DAY_SHORT[i]}</span>
+      <span class="week-dot-badge" style="background:${c.bb};color:${c.co};border:1px solid ${c.bd}">${t.toUpperCase()}</span>
+      <div class="week-dot-check ${d?'done':''}">${d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
+    </div>`;
+  });
+}
+
+function buildDayCards() {
+  const con=document.getElementById('day-cards'); con.innerHTML='';
+  DAYS.forEach((day,i)=>{ const t=S().types[i],d=S().done[i];
+    const el=document.createElement('div'); el.className=`day-card type-${t}${d?' done':''}`; el.id='card-'+i;
+    const btns=T_TYPES.map(tp=>`<button class="type-btn ${t===tp?'active-'+tp:''}" onclick="event.stopPropagation();setType(${i},'${tp}')">${tp.toUpperCase()}</button>`).join('');
+    el.innerHTML=`<div class="day-header" onclick="toggleList(${i})">
+      <div class="day-header-left">
+        <div class="day-check" onclick="event.stopPropagation();toggleDone(${i})">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="day-title-wrap"><div class="day-name">${day}</div><div class="day-date">${wDate(i)}</div></div>
+      </div>
+      <div class="day-right"><div class="type-selector">${btns}</div><button class="toggle-btn" id="toggle-${i}">↓</button></div>
+    </div>
+    <div class="${t==='rest'?'rest-body':'exercise-list'}" id="list-${i}">${t==='rest'?'😴 Ruhetag – erhol dich gut!':buildExHTML(i)}</div>`;
+    con.appendChild(el);
+  });
+}
+
+function buildExHTML(dayIdx) {
+  const st=S(), t=st.types[dayIdx], isDone=st.done[dayIdx];
+  const plan=st.customPlans[t]||DEF[t]||[];
+  const kgMap=lastKgMap(t);
+  const saved=st.dayEx[dayIdx]; // ← PER-DAY storage
+  let idx=0, html='';
+  plan.forEach(g => {
+    html+=`<div class="section-label">${g.section}</div>`;
+    g.items.forEach(name => {
+      let ex=(saved&&saved[idx])?{...saved[idx]}:{name,sets:'3',reps:'10',kg:''};
+      if(!ex.kg && kgMap[ex.name]) ex.kg=kgMap[ex.name];
+      const sk=ex.kg&&ex.kg.toLowerCase()==='n';
+      const la=isDone?'readonly tabindex="-1"':'';
+      html+=`<div class="exercise-item${isDone?' locked':''}${sk?' skipped':''}">
+        <input class="ex-name" value="${esc(ex.name)}" oninput="autoSave()" ${isDone?'readonly':''} placeholder="Übung"/>
+        <div class="ex-fields">
+          <input class="ex-input w-sets" value="${ex.sets}" oninput="autoSave()" onclick="this.select()" title="Sätze" ${la}/>
+          <span class="ex-sep">×</span>
+          <input class="ex-input w-reps" value="${ex.reps}" oninput="autoSave()" onclick="this.select()" title="Wdh" ${la}/>
+          <input class="ex-input w-kg" value="${esc(ex.kg||'')}" oninput="onKg(this)" onclick="this.select()" onkeydown="kgEnter(event,this)" placeholder="—" title="kg" ${la}/>
+          <span class="ex-unit">kg</span>
+        </div></div>`;
+      idx++;
+    });
+  });
+  return html;
+}
+
+// ── ENTER KEY: jump to next KG field ──
+function kgEnter(event, input) {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  const list = input.closest('.exercise-list');
+  if (!list) return;
+  const allKg = [...list.querySelectorAll('.ex-input.w-kg:not([readonly])')];
+  const cur   = allKg.indexOf(input);
+  if (cur >= 0 && cur < allKg.length - 1) {
+    allKg[cur + 1].focus();
+    allKg[cur + 1].select();
+  } else {
+    input.blur(); // last field – close keyboard
+  }
+}
+
+function lastKgMap(type) {
+  const m={};
+  SL().forEach(s=>{ if(s.type===type) s.exercises.forEach(ex=>{ if(ex.kg&&parseFloat(ex.kg)>0) m[ex.name]=ex.kg; }); });
+  return m;
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function p2(n) {return String(n).padStart(2,'0');}
+
+function onKg(input) {
+  input.closest('.exercise-item').classList.toggle('skipped', input.value.toLowerCase()==='n');
+  autoSave();
+}
+
+// ═══════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════
+function setType(i,type) {
+  collectDay(i);
+  S().types[i]=type;
+  S().dayEx[i]=null; // reset day's exercises when type changes
+  autoSave(); buildAll();
+  const l=document.getElementById('list-'+i); if(l)l.classList.add('open');
+  const b=document.getElementById('toggle-'+i); if(b)b.textContent='↑';
+}
+
+function toggleList(i) {
+  const l=document.getElementById('list-'+i),b=document.getElementById('toggle-'+i);
+  if(!l||!b) return;
+  b.textContent=l.classList.toggle('open')?'↑':'↓';
+}
+
+function toggleDone(i) {
+  collectDay(i);
+  const st=S(), wasDone=st.done[i]; st.done[i]=!wasDone; const t=st.types[i];
+  if(['push','pull','beine'].includes(t)) {
+    if(!wasDone){st.gymCount++;logSess(i);}
+    else{st.gymCount=Math.max(0,st.gymCount-1);removeSess(i);}
+  }
+  archiveWeek(); saveNow(); buildAll();
+}
+
+function logSess(i) {
+  const st=S(),t=st.types[i],list=document.getElementById('list-'+i),exercises=[];
+  if(list) list.querySelectorAll('.exercise-item').forEach(item=>{
+    const ins=item.querySelectorAll('input');
+    exercises.push({name:ins[0]?.value||'',sets:ins[1]?.value||'',reps:ins[2]?.value||'',kg:ins[3]?.value||''});
+  });
+  SL().push({date:wDate(i),dayIndex:i,weekLabel:st.weekLabel,type:t,exercises});
+  if(SL().length>500) SL().shift();
+}
+
+function removeSess(i) {
+  const sl=SL(),st=S(),t=st.types[i],wl=st.weekLabel;
+  for(let j=sl.length-1;j>=0;j--){if(sl[j].dayIndex===i&&sl[j].type===t&&sl[j].weekLabel===wl){sl.splice(j,1);break;}}
+}
+
+function collectDay(i) {
+  const st=S(),t=st.types[i]; if(t==='rest') return;
+  const list=document.getElementById('list-'+i); if(!list) return;
+  const items=list.querySelectorAll('.exercise-item'); if(!items.length) return;
+  const arr=[];
+  items.forEach(item=>{const ins=item.querySelectorAll('input');arr.push({name:ins[0]?.value||'',sets:ins[1]?.value||'3',reps:ins[2]?.value||'10',kg:ins[3]?.value||''});});
+  st.dayEx[i]=arr; // ← store per-day
+}
+
+function collectAll(){DAYS.forEach((_,i)=>collectDay(i));}
+
+function updateProgress() {
+  const st=S(),done=st.done.filter((d,i)=>d&&st.types[i]!=='rest').length,total=st.types.filter(t=>t!=='rest').length,deh=st.dehnen.filter(Boolean).length>=2;
+  document.getElementById('progress-info').textContent=done+' / '+total+' Trainingstage'+(deh?' · 🧘 ✓':'');
+  document.getElementById('progress-bar').style.width=total?(done/total*100)+'%':'0%';
+  document.getElementById('done-banner').style.display=(done===total&&deh&&total>0)?'block':'none';
+}
+
+// ═══════════════════════════════════════
+// DEHNEN
+// ═══════════════════════════════════════
+function toggleDehnen(){const b=document.getElementById('dehnen-body'),btn=document.getElementById('toggle-dehnen');btn.textContent=b.classList.toggle('open')?'↑':'↓';}
+function toggleDehnenSession(n){S().dehnen[n-1]=!S().dehnen[n-1];updateDehnenUI();updateProgress();autoSave();}
+function updateDehnenUI(){
+  [1,2].forEach(n=>{const el=document.getElementById('dehnen-'+n);if(!el)return;const d=S().dehnen[n-1];el.classList.toggle('done',d);el.querySelector('.dehnen-session-check').textContent=d?'✅':'○';});
+  const c=S().dehnen.filter(Boolean).length;
+  document.getElementById('dehnen-progress').textContent=c+' / 2';
+  document.getElementById('dehnen-complete-msg').style.display=c>=2?'block':'none';
+  document.getElementById('dehnen-card').style.borderColor=c>=2?'var(--green)':'';
+}
+
+// ═══════════════════════════════════════
+// MENU & PANELS
+// ═══════════════════════════════════════
+function toggleMenu(){const dd=document.getElementById('menu-dropdown'),op=!dd.classList.contains('open');dd.classList.toggle('open',op);document.getElementById('overlay').classList.toggle('open',op);}
+function openPanel(w){
+  closeAll(); document.getElementById('overlay').classList.add('open'); document.getElementById('panel-'+w).classList.add('open');
+  if(w==='history'){histViewU=activeUser;renderHistory();}
+  else if(w==='graph'){populateSel();renderGraph();}
+  else if(w==='plans') switchPlanTab(planTab);
+  else if(w==='checkin') renderCheckinHistory();
+}
+function closeAll(){
+  document.getElementById('menu-dropdown').classList.remove('open');
+  ['history','graph','plans','checkin'].forEach(p=>{const el=document.getElementById('panel-'+p);if(el)el.classList.remove('open');});
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════
+function switchHistTab(user){
+  histViewU=user;
+  ['julian','christina'].forEach(u=>document.getElementById('htab-'+u).className='history-user-btn'+(u===user?' active-'+u:''));
+  renderHistory();
+}
+function renderHistory(){
+  const el=document.getElementById('history-list'),hist=uHist[histViewU]||[];
+  if(!hist.length){el.innerHTML=`<div class="history-empty">Noch keine Wochen für ${USER_THEMES[histViewU].label}.</div>`;return;}
+  el.innerHTML=hist.slice().reverse().map(week=>{
+    const tags=week.types.map((t,d)=>week.done[d]&&t!=='rest'?`<span class="history-tag" style="background:${tc(t).bb};color:${tc(t).co}">${t.toUpperCase()}</span>`:'').join('');
+    const cnt=week.done.filter((d,di)=>d&&week.types[di]!=='rest').length;
+    return `<div class="history-week"><div class="history-week-label">${week.weekLabel} · <span style="color:var(--green)">${cnt} Training${cnt!==1?'e':''}</span></div><div class="history-week-tags">${tags||'<span style="font-size:.72rem;color:var(--muted)">Keine Einheiten</span>'}</div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// PLAN EDITOR
+// ═══════════════════════════════════════
+function switchPlanTab(type){
+  planTab=type;
+  document.querySelectorAll('.plan-tab').forEach((tab,i)=>{tab.className='plan-tab'+((['push','pull','beine'][i])===type?' active-'+type:'');});
+  ['push','pull','beine'].forEach(t=>document.getElementById('plan-'+t).classList.toggle('active',t===type));
+  renderPlanEditor(type);
+}
+function renderPlanEditor(type){
+  const con=document.getElementById('plan-'+type),groups=S().customPlans[type]||DEF[type]||[];
+  const otherUser=activeUser==='julian'?'christina':'julian';
+  let html='';
+  groups.forEach((g,gi)=>{
+    html+=`<div class="plan-section-block"><span class="plan-section-name">${g.section}</span>`;
+    g.items.forEach((item,ii)=>{html+=`<div class="plan-exercise-row"><input class="plan-ex-input" value="${esc(item)}" oninput="updPlan('${type}',${gi},${ii},this.value)" placeholder="Übungsname"/><button class="plan-del-btn" onclick="delPlan('${type}',${gi},${ii})">✕</button></div>`;});
+    html+=`<div class="plan-add-ex"><input id="nex-${type}-${gi}" placeholder="Neue Übung…" onkeydown="if(event.key==='Enter')addPlan('${type}',${gi})"/><button onclick="addPlan('${type}',${gi})">+ Add</button></div></div>`;
+  });
+  // Copy plan from other user button
+  html+=`<div class="plan-copy-row"><button class="plan-copy-btn" onclick="copyPlanFrom('${type}','${otherUser}')">📋 Plan von ${USER_THEMES[otherUser].label} übernehmen</button></div>`;
+  html+=`<div class="plan-save-row"><button class="plan-save-btn" onclick="savePlan('${type}')">✓ Plan speichern & anwenden</button></div>`;
+  con.innerHTML=html;
+}
+const pCopy=(type)=>JSON.parse(JSON.stringify(S().customPlans[type]||DEF[type]||[]));
+function updPlan(type,gi,ii,val){if(!S().customPlans[type])S().customPlans[type]=pCopy(type);S().customPlans[type][gi].items[ii]=val;}
+function delPlan(type,gi,ii){if(!S().customPlans[type])S().customPlans[type]=pCopy(type);S().customPlans[type][gi].items.splice(ii,1);renderPlanEditor(type);}
+function addPlan(type,gi){const inp=document.getElementById(`nex-${type}-${gi}`),val=inp?.value?.trim();if(!val)return;if(!S().customPlans[type])S().customPlans[type]=pCopy(type);S().customPlans[type][gi].items.push(val);inp.value='';renderPlanEditor(type);}
+function copyPlanFrom(type,fromUser){
+  const src=uData[fromUser]?.customPlans?.[type]||DEF[type]||[];
+  S().customPlans[type]=JSON.parse(JSON.stringify(src));
+  renderPlanEditor(type);
+  alert(`Plan von ${USER_THEMES[fromUser].label} übernommen. Klicke "Speichern & anwenden" um zu bestätigen.`);
+}
+function savePlan(type){
+  // Reset all days of this type so they rebuild from new plan
+  DAYS.forEach((_,i)=>{if(S().types[i]===type) S().dayEx[i]=null;});
+  saveNow(); buildAll();
+  const btn=document.querySelector(`#plan-${type} .plan-save-btn`);
+  if(btn){btn.textContent='✓ Gespeichert!';setTimeout(()=>btn.textContent='✓ Plan speichern & anwenden',1500);}
+}
+
+// ═══════════════════════════════════════
+// GRAPH
+// ═══════════════════════════════════════
+function exNames(){const n=new Set();SL().forEach(s=>s.exercises.forEach(ex=>{if(ex.name)n.add(ex.name);}));['push','pull','beine'].forEach(t=>(DEF[t]||[]).forEach(g=>g.items.forEach(nm=>n.add(nm))));return[...n].sort();}
+function populateSel(){const sel=document.getElementById('graph-ex-select'),cur=sel.value;sel.innerHTML='<option value="">Übung wählen…</option>'+exNames().map(n=>`<option value="${esc(n)}"${n===cur?' selected':''}>${esc(n)}</option>`).join('');}
+function renderGraph(){
+  const name=document.getElementById('graph-ex-select').value,empty=document.getElementById('graph-empty'),leg=document.getElementById('graph-legend'),canvas=document.getElementById('progress-chart'),ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!name){empty.style.display='block';canvas.style.display='none';leg.innerHTML='';return;}
+  const data=SL().flatMap(s=>s.exercises.filter(ex=>ex.name===name&&ex.kg&&parseFloat(ex.kg)>0).map(ex=>({label:s.date,kg:parseFloat(ex.kg)})));
+  if(!data.length){empty.textContent='Noch keine Daten für "'+name+'".';empty.style.display='block';canvas.style.display='none';leg.innerHTML='';return;}
+  empty.style.display='none';canvas.style.display='block';
+  const dpr=window.devicePixelRatio||1,W=canvas.parentElement.offsetWidth-40,H=180;
+  canvas.style.height=H+'px';canvas.width=W*dpr;canvas.height=H*dpr;ctx.scale(dpr,dpr);
+  const P={top:20,right:16,bottom:40,left:44},cw=W-P.left-P.right,ch=H-P.top-P.bottom;
+  const kgs=data.map(d=>d.kg),minK=Math.max(0,Math.min(...kgs)-5),maxK=Math.max(...kgs)+5;
+  const toX=i=>P.left+(data.length>1?(i/(data.length-1))*cw:cw/2);
+  const toY=kg=>P.top+ch-((kg-minK)/(maxK-minK))*ch;
+  const col=USER_THEMES[activeUser].primary;
+  ctx.strokeStyle='#e8e8e4';ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){const y=P.top+(ch/4)*g;ctx.beginPath();ctx.moveTo(P.left,y);ctx.lineTo(P.left+cw,y);ctx.stroke();ctx.fillStyle='#8a8a85';ctx.font='10px DM Mono,monospace';ctx.textAlign='right';ctx.fillText((maxK-((maxK-minK)/4)*g).toFixed(0)+'kg',P.left-5,y+4);}
+  if(data.length>1){ctx.beginPath();ctx.moveTo(toX(0),toY(data[0].kg));data.forEach((d,i)=>{if(i>0)ctx.lineTo(toX(i),toY(d.kg));});ctx.lineTo(toX(data.length-1),P.top+ch);ctx.lineTo(toX(0),P.top+ch);ctx.closePath();ctx.fillStyle=col+'22';ctx.fill();}
+  ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.lineJoin='round';data.forEach((d,i)=>i===0?ctx.moveTo(toX(i),toY(d.kg)):ctx.lineTo(toX(i),toY(d.kg)));ctx.stroke();
+  data.forEach((d,i)=>{const x=toX(i),y=toY(d.kg);ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.fillStyle='#8a8a85';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(d.label,x,H-6);ctx.fillStyle=USER_THEMES[activeUser].dark;ctx.font='bold 9px DM Mono,monospace';ctx.fillText(d.kg+'kg',x,y-10);});
+  const gain=kgs.length>1?(kgs[kgs.length-1]-kgs[0]).toFixed(1):null;
+  leg.innerHTML=`<div class="graph-legend-item"><div class="graph-legend-dot" style="background:${col}"></div>${name} · ${data.length} Session${data.length!==1?'s':''}</div>`+(gain!==null?`<div class="graph-legend-item" style="margin-left:auto">${gain>=0?'+':''}${gain}kg</div>`:'');
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function resetWeek(){if(!confirm('Woche zurücksetzen?'))return;S().done=[false,false,false,false,false,false,false];S().dehnen=[false,false];saveNow();buildAll();}
+function isToday(i){const d=new Date().getDay();return(d===0?6:d-1)===i;}
+function wDate(i){const t=new Date(),day=t.getDay(),m=new Date(t);m.setDate(t.getDate()+(day===0?-6:1-day));const tg=new Date(m);tg.setDate(m.getDate()+i);return tg.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit'});}
+function wLabel(){const t=new Date(),day=t.getDay(),m=new Date(t);m.setDate(t.getDate()+(day===0?-6:1-day));const s=new Date(m);s.setDate(m.getDate()+6);return m.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit'})+' – '+s.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function tc(t){const m={push:{bg:'#ff8c00',bd:'#e07000',co:'#7a3500',bb:'#ffb347'},pull:{bg:'#1a7fd4',bd:'#0f5fa0',co:'#072d52',bb:'#5aaff0'},beine:{bg:'#18a84a',bd:'#0f7a34',co:'#063d1a',bb:'#4dcc7a'},rest:{bg:'#e8e8e6',bd:'#d0d0cc',co:'#aaaaaa',bb:'#dedede'}};return m[t]||m.rest;}
+
+// ═══════════════════════════════════════
+// PWA UPDATE MECHANISM
+// ═══════════════════════════════════════
+function applyUpdate() {
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage({type:'SKIP_WAITING'});
+    }
+    // Give SW time to activate, then reload
+    setTimeout(()=>window.location.reload(true), 400);
+  });
+}
+
+function initServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Check for updates every hour
+    setInterval(()=>reg.update(), 60*60*1000);
+
+    // New SW found while page is open
+    reg.addEventListener('updatefound', () => {
+      const newSW = reg.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          // New version is ready – show update banner
+          document.getElementById('update-banner').classList.add('visible');
+        }
+      });
+    });
+
+    // Handle SW controller change (after skipWaiting)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+
+    // Check if there's already a waiting worker (opened app after update)
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      document.getElementById('update-banner').classList.add('visible');
+    }
+  }).catch(()=>{});
+}
+
+// Save before app closes
+window.addEventListener('beforeunload', () => { saveNow(); });
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+loadAll();
+initServiceWorker();
+const lastUser = localStorage.getItem('gp6-active-user');
+if (lastUser==='julian'||lastUser==='christina') selectUser(lastUser);
+</script>
+</body>
+</html>
