@@ -1,64 +1,62 @@
-const CACHE_NAME = 'gymplan-v2';
-
+const CACHE = 'gymplan-v2';
 const ASSETS = [
-  '/gymplan/',
-  '/gymplan/index.html',
-  '/gymplan/manifest.json',
-  '/gymplan/icon-192.png',
-  '/gymplan/icon-512.png',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  // von Claude übernommen (Google Fonts caching)
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap'
 ];
 
-// Install: cache all assets
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS).catch(() => {
-        // fallback if fonts fail
-        return cache.addAll([
-          '/gymplan/',
-          '/gymplan/index.html',
-          '/gymplan/manifest.json'
-        ]);
-      });
-    })
+    caches.open(CACHE).then(c =>
+      c.addAll(ASSETS).catch(() =>
+        // Fallback wie bei Claude verbessert
+        c.addAll(['/index.html', '/manifest.json'])
+      )
+    )
   );
-  self.skipWaiting();
+  // BLEIBT wie bei dir (kein auto skipWaiting)
 });
 
-// Activate: remove old caches
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(k => k !== CACHE_NAME)
-          .map(k => caches.delete(k))
-      )
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
 });
 
-// Fetch: serve from cache, fallback to network
 self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(e.request)
-        .then(response => {
-          if (e.request.method === 'GET' && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+      const network = fetch(e.request)
+        .then(res => {
+          if (e.request.method === 'GET' && res.status === 200) {
+            caches.open(CACHE).then(c => c.put(e.request, res.clone()));
           }
-          return response;
+          return res;
         })
         .catch(() => {
+          // 👇 WICHTIGE Verbesserung von Claude:
+          if (cached) return cached;
+
+          // Offline fallback für Seiten
           if (e.request.destination === 'document') {
-            return caches.match('/gymplan/index.html');
+            return caches.match('/index.html');
           }
         });
+
+      return cached || network;
     })
   );
+});
+
+// bleibt von dir (Update-Flow kontrolliert)
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
