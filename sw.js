@@ -2,7 +2,7 @@
 // APP_VERSION – diese Zahl bei jedem Update um 1 erhöhen
 // z.B. nächstes Update: APP_VERSION = 3, danach 4, usw.
 // ─────────────────────────────────────────────────────────────
-const APP_VERSION = 5;
+const APP_VERSION = 6;
 
 const CACHE_NAME = 'gymplan-v' + APP_VERSION;
 const ASSETS = [
