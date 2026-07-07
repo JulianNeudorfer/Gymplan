@@ -2,14 +2,14 @@
 // APP_VERSION – diese Zahl bei JEDEM Update um 1 erhöhen!
 // (z.B. 2 → 3 → 4 …) Nur so erkennt die App eine neue Version.
 // ─────────────────────────────────────────────────────────────
-const APP_VERSION = 8;
+const APP_VERSION = 9;
 
 const CACHE_NAME = 'gymplan-v' + APP_VERSION;
 const ASSETS = [
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  'index.html',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap'
 ];
 
@@ -18,7 +18,7 @@ self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(ASSETS).catch(() => {
-        return cache.addAll(['/index.html', '/manifest.json']);
+        return cache.addAll(['index.html', 'manifest.json']);
       });
     })
   );
@@ -61,15 +61,15 @@ self.addEventListener('fetch', e => {
         // nur gültige Antworten cachen
         if (res && res.ok) {
           const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put('/index.html', clone));
+          caches.open(CACHE_NAME).then(c => c.put('index.html', clone));
         }
         return res;
       }).catch(async () => {
         // Offline / schlechtes Netz → gecachte Version aus IRGENDEINEM Cache holen
-        const cached = await caches.match('/index.html') || await caches.match('index.html') || await caches.match(req);
+        const cached = await caches.match('index.html') || await caches.match('/index.html') || await caches.match(req);
         if (cached) return cached;
         // Letzter Notnagel: aus dem fresh-Cache (vom Update) holen
-        const fresh = await caches.open('gymplan-fresh').then(c => c.match('/index.html')).catch(() => null);
+        const fresh = await caches.open('gymplan-fresh').then(c => c.match('index.html')).catch(() => null);
         if (fresh) return fresh;
         // Wirklich nichts da → einfache Hinweisseite statt weißem Bildschirm
         return new Response('<!DOCTYPE html><meta charset="utf-8"><body style="font-family:sans-serif;padding:2rem;text-align:center"><h2>Keine Verbindung</h2><p>Bitte mit dem Internet verbinden und neu laden.</p><button onclick="location.reload()" style="padding:.6rem 1.2rem;font-size:1rem;border-radius:8px;border:1px solid #ccc;background:#f5f5f3">Neu laden</button></body>', {headers:{'Content-Type':'text/html'}});
