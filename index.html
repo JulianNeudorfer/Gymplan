@@ -48,6 +48,7 @@
     .user-card-name{font-size:1.15rem;font-weight:600}
     .user-card-julian .user-card-name{color:#2e75b6}
     .user-card-christina .user-card-name{color:#c0446e}
+    .user-screen-version{font-size:.65rem;font-family:'DM Mono',monospace;color:#c5c5c0;margin-top:-.5rem}
 
     /* ── APP ── */
     #app{display:none}
@@ -249,6 +250,7 @@
     .ex-drag{font-size:.8rem;color:rgba(0,0,0,.3);padding:.15rem .1rem .15rem 0;cursor:grab;flex-shrink:0;user-select:none;-webkit-user-select:none;touch-action:none;line-height:1}
     .ex-swipe-wrap.dragging{z-index:10;box-shadow:0 8px 22px rgba(0,0,0,.3)}
     .ex-swipe-wrap.dragging .exercise-item{opacity:.97}
+    .ex-empty-hint{padding:.7rem 1.25rem .85rem;font-size:.78rem;color:rgba(0,0,0,.45);line-height:1.45}
     .ex-name{flex:1;font-size:16px!important;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;padding:.12rem .25rem;border-radius:5px;min-width:0}
     .ex-name:focus{background:rgba(255,255,255,.75)}
     .ex-fields{display:flex;align-items:center;gap:.2rem;flex-shrink:0}
@@ -343,6 +345,7 @@
       <div class="user-card-name">Christina</div>
     </div>
   </div>
+  <div class="user-screen-version" id="user-screen-version"></div>
 </div>
 
 <!-- MAIN APP -->
@@ -383,7 +386,7 @@
     </div>
     <div class="panel-body" style="padding:0">
       <div class="weight-input-row">
-        <input type="number" step="0.1" inputmode="decimal" id="weight-input" placeholder="z.B. 78.4"
+        <input type="text" inputmode="decimal" autocomplete="off" id="weight-input" placeholder="z.B. 78.4"
           onkeydown="if(event.key==='Enter'){addWeight();this.blur();}"/>
         <span class="weight-unit">kg</span>
         <button class="weight-save-btn" onclick="addWeight()">✓ Speichern</button>
@@ -506,7 +509,7 @@
 // ═══════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════
-const APP_VERSION = 8;  // bei jedem Update erhöhen (auch in sw.js + version.json)
+const APP_VERSION = 9;  // bei jedem Update erhöhen (auch in sw.js + version.json)
 // ═══════════════════════════════════════════════════
 // FIREBASE CLOUD SYNC
 // Trage hier deine Firebase-Konfiguration ein (aus der Firebase Console).
@@ -853,7 +856,7 @@ function buildDayCards() {
     const t=S().types[i], d=S().done[i];
     const el=document.createElement('div');
     el.className=`day-card type-${t}${d?' done':''}`; el.id='card-'+i;
-    const availTypes = (activeUser==='christina') ? ['push','pull','beine','gk','rest'] : T_TYPES;
+    const availTypes = ['push','pull','beine','gk','rest'];  // GK für beide Benutzer
     const btns=availTypes.map(tp=>`<button class="type-btn ${t===tp?'active-'+tp:''}" onclick="event.stopPropagation();setType(${i},'${tp}')">${tp.toUpperCase()}</button>`).join('');
     el.innerHTML=`
       <div class="day-header" onclick="toggleList(${i})">
@@ -886,19 +889,15 @@ function buildExHTML(dayIdx) {
   // If day never touched (dayEx null), default = all plan exercises selected.
   let selected = st.daySel ? st.daySel[dayIdx] : null;
   if (selected == null) {
-    // default selection priority:
-    // 1) exercises already saved for this day
-    // 2) exercises from the LAST completed session of this type (carry-over)
-    // 3) all plan items
-    const planItems = plan.flatMap(g=>g.items);
-    const planSet = new Set(planItems);
+    // Standard: KEINE automatische Übernahme vom letzten Training.
+    // Ein frischer Tag startet LEER – die Übungen werden täglich selbst
+    // über die Muskelgruppen-Checklisten gewählt. Nur wenn der Tag in
+    // dieser Woche schon Daten hat (dayEx), werden diese angezeigt.
+    const planSet = new Set(plan.flatMap(g=>g.items));
     if (st.dayEx[dayIdx]) {
       selected = st.dayEx[dayIdx].map(e=>e.name).filter(n=>planSet.has(n));
     } else {
-      const lastSel = lastSelForType(t);
-      // only keep carried-over names that exist in the current plan
-      const carried = (lastSel||[]).filter(n=>planSet.has(n));
-      selected = carried.length ? carried : planItems;
+      selected = [];
     }
     if (!st.daySel) st.daySel = {};
     st.daySel[dayIdx] = selected;
@@ -947,6 +946,11 @@ function buildExHTML(dayIdx) {
         + '</div></div>';
     }
   });
+
+  // Hinweis anzeigen, wenn für heute noch keine Übungen gewählt wurden
+  if (!isDone && selSet.size === 0) {
+    html += '<div class="ex-empty-hint">👆 Tippe auf eine Muskelgruppe (z.B. „'+esc(plan[0]?plan[0].section:'Brust')+' ▾"), um deine Übungen für heute zu wählen. Deine letzten Werte werden automatisch übernommen.</div>';
+  }
 
   // Keep selection clean: drop any selected names that don't belong to this
   // day's plan sections (e.g. leftovers from a different training type).
@@ -1001,14 +1005,6 @@ function lastExMap(type) {
   return map;
 }
 
-// Names of exercises used in the LAST completed session of this type
-function lastSelForType(type) {
-  let names = null;
-  SL().forEach(s => {
-    if (s.type === type) names = s.exercises.map(e=>e.name).filter(Boolean);
-  });
-  return names; // null if none yet
-}
 
 // ── LIBRARY PICKER ──
 
@@ -1037,8 +1033,7 @@ function toggleExSelected(dayIdx, sectionIdx, name) {
   // Build current selection from DOM-backed state
   let sel = st.daySel[dayIdx];
   if (sel == null) {
-    const plan = getPlan(t);
-    sel = st.dayEx[dayIdx] ? st.dayEx[dayIdx].map(e=>e.name) : plan.flatMap(g=>g.items);
+    sel = st.dayEx[dayIdx] ? st.dayEx[dayIdx].map(e=>e.name) : [];
   }
   const set = new Set(sel);
   // Save current input values first so we don't lose typed kg
@@ -1088,8 +1083,7 @@ function addExToSection(dayIdx, sectionIdx, name) {
   if (!st.daySel) st.daySel = {};
   let sel = st.daySel[dayIdx];
   if (sel == null) {
-    const plan = getPlan(t);
-    sel = st.dayEx[dayIdx] ? st.dayEx[dayIdx].map(e=>e.name) : plan.flatMap(g=>g.items);
+    sel = st.dayEx[dayIdx] ? st.dayEx[dayIdx].map(e=>e.name) : [];
   }
   const set = new Set(sel); set.add(name);
   st.daySel[dayIdx] = [...set];
@@ -1283,9 +1277,11 @@ function p2(n)  { return String(n).padStart(2,'0'); }
 // Cardio (Laufband, Fahrrad, ...) → km statt kg.
 const CARDIO_WORDS = ['laufband','fahrrad','rudergerät','rudergeraet','crosstrainer',
   'stepper','ergometer','spinning','laufen','joggen','cardio','elliptical','airbike','assault'];
+const TIME_WORDS = ['plank','halten','wandsitz','wall sit','hollow'];
 function exUnit(name) {
   const n = (name||'').toLowerCase();
   if (CARDIO_WORDS.some(w => n.includes(w))) return 'km';
+  if (TIME_WORDS.some(w => n.includes(w)))   return 'sek';
   return 'kg';
 }
 
@@ -1439,7 +1435,9 @@ function collectDay(i) {
   const st=S(), t=st.types[i];
   if (t==='rest') return;
   const list=document.getElementById('list-'+i); if(!list) return;
-  const items=list.querySelectorAll('.exercise-item'); if(!items.length) return;
+  const items=list.querySelectorAll('.exercise-item');
+  // Kein frühes return bei leerer Liste: ein bewusst geleerter Tag
+  // muss auch als leer gespeichert werden (sonst tauchen alte Übungen wieder auf)
   const arr=[];
   items.forEach(item => {
     const ins=item.querySelectorAll('input');
@@ -1950,6 +1948,8 @@ function resetWeek() {
   if (!confirm('Woche zurücksetzen?')) return;
   S().done   = [false,false,false,false,false,false,false];
   S().dehnen = [false,false];
+  S().dayEx  = {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
+  S().daySel = {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
   saveNow(); buildAll();
 }
 
@@ -2087,7 +2087,7 @@ async function applyUpdate() {
           await Promise.all(keys.map(k => caches.delete(k)));
           try {
             const c = await caches.open('gymplan-fresh');
-            await c.put('/index.html', res.clone());
+            await c.put('index.html', res.clone());
           } catch(e) {}
         }
       }
@@ -2172,6 +2172,7 @@ window.addEventListener('beforeunload', () => saveNow());
 // ═══════════════════════════════════════════════════
 cloudInit();
 loadAll();
+(function(){ const v=document.getElementById('user-screen-version'); if(v) v.textContent='Version '+APP_VERSION; })();
 initServiceWorker();
 const lastUser = localStorage.getItem('gp7-active-user');
 if (lastUser==='julian'||lastUser==='christina') selectUser(lastUser);
