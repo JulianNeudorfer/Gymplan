@@ -97,7 +97,7 @@
     .hist-week-arrow{font-size:.75rem;color:var(--muted);font-family:'DM Mono',monospace;transition:transform .2s}
     .hist-week-arrow.open{transform:rotate(180deg)}
     .hist-week-tags{display:flex;gap:.3rem;flex-wrap:wrap}
-    .history-tag{font-size:.6rem;font-family:'DM Mono',monospace;padding:.1rem .4rem;border-radius:99px}
+    .history-tag{font-size:.6rem;font-family:'DM Mono',monospace;padding:.1rem .4rem;border-radius:99px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
     /* Session inside week */
     .hist-sessions{display:none;background:#fafaf8}
@@ -122,7 +122,7 @@
 
     /* ── GRAPH PANEL ── */
     .graph-filter-row{padding:.75rem 1.25rem 0;display:flex;gap:.5rem;flex-wrap:wrap}
-    .graph-filter-btn{font-size:.68rem;font-family:'DM Mono',monospace;font-weight:600;padding:.2rem .6rem;border-radius:99px;border:1.5px solid var(--border);background:none;cursor:pointer;color:var(--muted)}
+    .graph-filter-btn{font-size:.68rem;font-family:'DM Mono',monospace;font-weight:600;padding:.2rem .6rem;border-radius:99px;border:1.5px solid var(--border);background:none;cursor:pointer;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .graph-filter-btn.active{border-color:var(--user-primary);color:var(--user-dark);background:var(--user-light)}
     .graph-ex-select{font-size:16px;border:1.5px solid var(--border);border-radius:8px;padding:.3rem .6rem;background:var(--bg);color:var(--text);outline:none;width:calc(100% - 2.5rem);margin:.5rem 1.25rem 0;display:block;font-family:'DM Sans',sans-serif}
     .graph-canvas-wrap{padding:.75rem 1.25rem 0}
@@ -138,6 +138,11 @@
     .plan-tab.active-push{color:var(--push-color);border-bottom-color:#ff8c00;background:#ffe8d0}
     .plan-tab.active-pull{color:var(--pull-color);border-bottom-color:#1a7fd4;background:#ddeaf8}
     .plan-tab.active-beine{color:var(--beine-color);border-bottom-color:#18a84a;background:#d4eedd}
+    .plan-tab.active-v1{color:#5c1230;border-bottom-color:#e8739a;background:#f5a8c255}
+    .plan-tab.active-v2{color:#7a3500;border-bottom-color:#ff8c00;background:#ffb34755}
+    .plan-tab.active-v3{color:#0d3d1a;border-bottom-color:#5bc76e;background:#b3e8bf55}
+    .plan-tab.active-v4{color:#06394a;border-bottom-color:#1a9ec4;background:#7fd7ec55}
+    .plan-tab{max-width:33%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .plan-content{display:none;padding:.75rem 0}
     .plan-content.active{display:block}
     .plan-section-name{font-size:.62rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.4rem 1.25rem .1rem;display:block}
@@ -155,6 +160,20 @@
     .plan-copy-btn:hover{border-color:var(--text);color:var(--text)}
     .plan-save-row{padding:.75rem 1.25rem 0}
     .plan-save-btn{width:100%;padding:.6rem;border-radius:10px;border:none;background:var(--text);color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
+    .plan-name-row{padding:.75rem 1.25rem .25rem}
+    .plan-name-lbl{font-size:.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:.3rem}
+    .plan-name-input{width:100%;font-size:16px!important;border:1.5px solid var(--border);border-radius:10px;padding:.5rem .75rem;outline:none;font-family:'DM Sans',sans-serif;font-weight:600;background:var(--bg);color:var(--text)}
+    .plan-name-input:focus{border-color:var(--user-primary)}
+    .plan-sec-head{display:flex;align-items:center;justify-content:space-between;padding:.4rem 1.25rem .1rem}
+    .plan-sec-head .plan-section-name{padding:0}
+    .plan-sec-del{color:#d8d8d4;background:none;border:none;cursor:pointer;font-size:.75rem;padding:.1rem .3rem}
+    .plan-sec-del:hover{color:#e05050}
+    .plan-suggest{display:flex;flex-wrap:wrap;gap:.3rem;padding:.35rem 1.25rem .1rem}
+    .plan-suggest-chip{font-size:.72rem;padding:.2rem .55rem;border-radius:99px;border:1.5px dashed var(--border);background:none;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
+    .plan-suggest-chip:active{background:var(--bg)}
+    .plan-addsec-row{padding:.75rem 1.25rem 0}
+    .plan-addsec-btn{width:100%;padding:.5rem;border-radius:10px;border:1.5px dashed var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer}
+    .plan-empty-sec{font-size:.72rem;color:var(--muted);padding:.15rem 1.25rem .1rem}
 
     /* ── PROGRESS ── */
     #progress-bar-wrap{max-width:800px;margin:0 auto .5rem;background:var(--border);border-radius:99px;height:3px;overflow:hidden}
@@ -167,7 +186,7 @@
     .week-dot{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.45rem .2rem;border-radius:10px;border:1.5px solid var(--border);background:var(--surface)}
     .week-dot.today{border-color:var(--user-primary)!important;border-width:2px!important}
     .week-dot-label{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase}
-    .week-dot-badge{font-size:.55rem;font-family:'DM Mono',monospace;font-weight:600;padding:.1rem .3rem;border-radius:99px}
+    .week-dot-badge{font-size:.55rem;font-family:'DM Mono',monospace;font-weight:600;padding:.1rem .3rem;border-radius:99px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .week-dot-check{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center}
     .week-dot-check.done{background:var(--green);border-color:var(--green)}
 
@@ -178,12 +197,20 @@
     .day-card.type-pull{background:var(--pull-bg);border-color:var(--pull-border)}
     .day-card.type-beine{background:var(--beine-bg);border-color:var(--beine-border)}
     .day-card.type-gk{background:#7b5cd6;border-color:#5a3eb0}
+    .day-card.type-v1{background:#e8739a;border-color:#c0446e}
+    .day-card.type-v2{background:#ff8c00;border-color:#e07000}
+    .day-card.type-v3{background:#5bc76e;border-color:#3ba14e}
+    .day-card.type-v4{background:#1a9ec4;border-color:#0f7590}
     .day-card.type-rest{background:var(--rest-bg);border-color:var(--rest-border);opacity:.4}
     .day-card.type-rest:hover{opacity:.55;box-shadow:none}
     .day-card.type-push .day-name,.day-card.type-push .day-date,.day-card.type-push .toggle-btn,
     .day-card.type-pull .day-name,.day-card.type-pull .day-date,.day-card.type-pull .toggle-btn,
     .day-card.type-beine .day-name,.day-card.type-beine .day-date,.day-card.type-beine .toggle-btn{color:rgba(255,255,255,.92)}
     .day-card.type-gk .day-name,.day-card.type-gk .day-date,.day-card.type-gk .toggle-btn{color:rgba(255,255,255,.92)}
+    .day-card.type-v1 .day-name,.day-card.type-v1 .day-date,.day-card.type-v1 .toggle-btn{color:rgba(255,255,255,.92)}
+    .day-card.type-v2 .day-name,.day-card.type-v2 .day-date,.day-card.type-v2 .toggle-btn{color:rgba(255,255,255,.92)}
+    .day-card.type-v3 .day-name,.day-card.type-v3 .day-date,.day-card.type-v3 .toggle-btn{color:rgba(255,255,255,.92)}
+    .day-card.type-v4 .day-name,.day-card.type-v4 .day-date,.day-card.type-v4 .toggle-btn{color:rgba(255,255,255,.92)}
     .day-card.done{filter:brightness(.88);opacity:.78}
     .day-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;cursor:pointer;user-select:none}
     .day-header-left{display:flex;align-items:center;gap:.8rem}
@@ -196,19 +223,24 @@
     .day-card.done .day-name{color:var(--muted);text-decoration:line-through}
     .day-date{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
     .day-right{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
-    .type-selector{display:flex;gap:.25rem}
+    .type-selector{display:flex;gap:.25rem;flex-wrap:wrap;justify-content:flex-end}
     .type-btn{font-size:.6rem;font-family:'DM Mono',monospace;font-weight:600;padding:.16rem .45rem;border-radius:99px;border:1.5px solid transparent;background:rgba(255,255,255,.6);cursor:pointer;color:var(--muted)}
     .type-btn.active-push{background:var(--push-badge);color:var(--push-color);border-color:var(--push-border)}
     .type-btn.active-pull{background:var(--pull-badge);color:var(--pull-color);border-color:var(--pull-border)}
     .type-btn.active-beine{background:var(--beine-badge);color:var(--beine-color);border-color:var(--beine-border)}
     .type-btn.active-gk{background:#b9a4ec;color:#33208a;border-color:#5a3eb0}
+    .type-btn.active-v1{background:#f5a8c2;color:#5c1230;border-color:#c0446e}
+    .type-btn.active-v2{background:#ffb347;color:#7a3500;border-color:#e07000}
+    .type-btn.active-v3{background:#b3e8bf;color:#0d3d1a;border-color:#3ba14e}
+    .type-btn.active-v4{background:#7fd7ec;color:#06394a;border-color:#0f7590}
+    .type-btn{max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .type-btn.active-rest{background:var(--rest-badge);color:var(--rest-color);border-color:var(--rest-border)}
     .toggle-btn{font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Mono',monospace;padding:.2rem .3rem}
     .exercise-list,.rest-body{display:none;border-top:1px solid rgba(0,0,0,.07)}
     .exercise-list.open,.rest-body.open{display:block}
     .rest-body{padding:.75rem 1.25rem;font-size:.82rem;color:var(--muted)}
     .section-label-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.25rem .15rem}
-    .section-lbl{font-size:.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .section-lbl{font-size:.6rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text)}
     .section-add-btn{font-size:1rem;background:rgba(255,255,255,.45);border:1.5px solid rgba(0,0,0,.12);border-radius:99px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,0,0,.5);flex-shrink:0;padding:0;line-height:1}
     .section-add-btn:active{background:rgba(255,255,255,.8)}
     .section-add-row{display:none;padding:.4rem 1.25rem .5rem;background:rgba(255,255,255,.28);border-bottom:1px solid rgba(0,0,0,.07)}
@@ -221,7 +253,7 @@
     /* section name is tappable */
     .section-lbl{cursor:pointer;display:flex;align-items:center;gap:.3rem}
     .section-lbl:active{opacity:.6}
-    .section-lbl-arrow{font-size:.7rem;opacity:.6}
+    .section-lbl-arrow{font-size:.7rem;opacity:.75}
     /* exercise checklist popup per section */
     .section-checklist{display:none;padding:.4rem 1.25rem .55rem;background:rgba(255,255,255,.32);border-bottom:1px solid rgba(0,0,0,.07)}
     .section-checklist.open{display:block}
@@ -243,6 +275,10 @@
     .day-card.type-pull .exercise-item{background:var(--pull-bg)}
     .day-card.type-beine .exercise-item{background:var(--beine-bg)}
     .day-card.type-gk .exercise-item{background:#7b5cd6}
+    .day-card.type-v1 .exercise-item{background:#e8739a}
+    .day-card.type-v2 .exercise-item{background:#ff8c00}
+    .day-card.type-v3 .exercise-item{background:#5bc76e}
+    .day-card.type-v4 .exercise-item{background:#1a9ec4}
     .exercise-item.swiped{transform:translateX(-80px)}
     /* PR badge – ganz klein, minimal */
     .pr-badge{font-size:.6rem;margin-left:.25rem;opacity:.85;flex-shrink:0}
@@ -303,6 +339,10 @@
     .ci-hist-date{font-size:.8rem;font-weight:500}
     .ci-hist-time{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted)}
     .ci-hist-dur{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--green)}
+    .ci-hist-dur.long{color:#e0463c}
+    .ci-avg{padding:.15rem 1.25rem .5rem;font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted)}
+    .ci-hist-type{font-size:.55rem;font-family:'DM Mono',monospace;font-weight:600;padding:.05rem .35rem;border-radius:99px;margin-left:.4rem;vertical-align:middle;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+    .hist-session-dur{font-size:.62rem;font-family:'DM Mono',monospace;color:var(--green);font-weight:600;white-space:nowrap}
     /* ── GEWICHT PANEL ── */
     .weight-input-row{display:flex;gap:.5rem;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
     .weight-input-row input{flex:1;min-width:0;font-size:16px!important;border:1.5px solid var(--border);border-radius:10px;padding:.5rem .75rem;outline:none;font-family:'DM Mono',monospace;background:var(--bg)}
@@ -437,14 +477,8 @@
       <button class="panel-close" onclick="closeAll()">✕</button>
     </div>
     <div class="panel-body" style="padding:0">
-      <div class="plan-tabs">
-        <button class="plan-tab active-push" onclick="switchPlanTab('push')">PUSH</button>
-        <button class="plan-tab" onclick="switchPlanTab('pull')">PULL</button>
-        <button class="plan-tab" onclick="switchPlanTab('beine')">BEINE</button>
-      </div>
-      <div id="plan-push" class="plan-content active"></div>
-      <div id="plan-pull" class="plan-content"></div>
-      <div id="plan-beine" class="plan-content"></div>
+      <div class="plan-tabs" id="plan-tabs"></div>
+      <div id="plan-body" class="plan-content active"></div>
     </div>
   </div>
 
@@ -509,7 +543,7 @@
 // ═══════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════
-const APP_VERSION = 9;  // bei jedem Update erhöhen (auch in sw.js + version.json)
+const APP_VERSION = 14;  // bei jedem Update erhöhen (auch in sw.js + version.json)
 // ═══════════════════════════════════════════════════
 // FIREBASE CLOUD SYNC
 // Trage hier deine Firebase-Konfiguration ein (aus der Firebase Console).
@@ -591,10 +625,55 @@ const USER_THEMES = {
   christina: {primary:'#e8739a',light:'#fde8f2',border:'#f0a8cc',dark:'#c0446e',avatar:'🌸',label:'Christina', theme:'#c0446e'},
 };
 
+// ═══════════════════════════════════════════════════
+// VARIANTEN (frei benennbare Ganzkörper-Tage, nur Christina)
+// ═══════════════════════════════════════════════════
+const VARIANT_USERS = ['christina'];
+const VARIANT_IDS   = ['v1','v2','v3','v4'];
+const VARIANT_COLORS = {
+  v1:{bg:'#e8739a',bd:'#c0446e',co:'#5c1230',bb:'#f5a8c2'},
+  v2:{bg:'#ff8c00',bd:'#e07000',co:'#7a3500',bb:'#ffb347'},
+  v3:{bg:'#5bc76e',bd:'#3ba14e',co:'#0d3d1a',bb:'#b3e8bf'},
+  v4:{bg:'#1a9ec4',bd:'#0f7590',co:'#06394a',bb:'#7fd7ec'},
+};
+// Standard-Muskelgruppen einer neuen Variante (Ganzkörper)
+const VARIANT_SECTIONS = ['Brust','Schulter','Rücken','Bizeps','Trizeps','Beine','Core'];
+
+function hasVariants(user) { return VARIANT_USERS.includes(user || activeUser); }
+function getVariants()     { return (S() && S().variants) || []; }
+function variantById(id)   { return getVariants().find(v => v.id === id) || null; }
+function isVariantType(t)  { return VARIANT_IDS.includes(t); }
+
+// Anzeigename eines Tagestyps (Badge / Verlauf)
+function typeName(t) {
+  const v = variantById(t);
+  return v ? (v.name || 'Variante') : String(t).toUpperCase();
+}
+// Beschriftung für einen BESTIMMTEN Benutzer (im Verlauf wird auch der
+// jeweils andere Benutzer angezeigt – dessen Variantennamen müssen stimmen).
+function typeLabelFor(user, t) {
+  if (t === 'rest') return 'REST';
+  const vs = (uData[user] && uData[user].variants) || [];
+  const v  = vs.find(x => x.id === t);
+  if (v) return (v.name || 'Variante').toUpperCase();
+  return String(t).toUpperCase();
+}
+function typeLabel(t) {
+  if (t === 'rest') return 'REST';
+  const v = variantById(t);
+  if (v) return (v.name || 'Variante').toUpperCase();
+  return String(t).toUpperCase();
+}
+
+// Verfügbare Tagestypen des aktiven Benutzers
+function availableTypes() {
+  return hasVariants() ? [...VARIANT_IDS, 'rest'] : ['push','pull','beine','gk','rest'];
+}
+
 // Muscle group emojis for Progress panel
 const SECTION_ICONS = {
   'Brust':'💪 Brust','Schulter':'🏋️ Schulter','Trizeps':'🔱 Trizeps',
-  'Rücken':'🔙 Rücken','Bizeps':'💪 Bizeps','Bein':'🦵 Bein',
+  'Rücken':'🔙 Rücken','Bizeps':'💪 Bizeps','Bein':'🦵 Bein','Beine':'🦵 Beine',
   'Quadrizeps':'🦵 Quadrizeps','Hamstrings & Po':'🍑 Hamstrings & Po',
   'Cardio':'🏃 Cardio','Core':'🔥 Core','Bizeps & Bein':'💪 Bizeps & Bein',
 };
@@ -636,6 +715,8 @@ function sectionType(section) {
 // Liefert den Plan für einen Tagestyp (GK = kombinierter Ganzkörperplan)
 function getPlan(t) {
   if (t === 'gk') return gkPlan();
+  const v = variantById(t);
+  if (v) return v.plan || [];
   return S().customPlans[t] || DEF[t] || [];
 }
 
@@ -654,6 +735,7 @@ const mkState = () => ({
   checkins:        [],
   weights:         [],
   weekLabel:       wLabel(),
+  variants:        null,   // nur Christina: [{id,name,plan:[{section,items}]}]
   customPlans:     {push:null,pull:null,beine:null},
   exerciseLibrary: {push:[],pull:[],beine:[]},
 });
@@ -692,6 +774,48 @@ function persistLocalOnly(user) {
   localStorage.setItem(k(user,'sessions'), JSON.stringify(uSess[user]));
 }
 
+// Stellt sicher, dass ein Varianten-Benutzer 4 gültige Varianten hat.
+// Läuft mehrfach gefahrlos (idempotent) – auch nach dem Laden aus der Cloud.
+function ensureVariants(user) {
+  if (!VARIANT_USERS.includes(user)) return;
+  const d = uData[user]; if (!d) return;
+
+  if (!Array.isArray(d.variants) || !d.variants.length) {
+    // Variante 1 erbt ALLE bisherigen Übungen (push+pull+beine zusammengefasst),
+    // damit beim Umstieg nichts verloren geht.
+    const combined = [];
+    ['push','pull','beine'].forEach(bt => {
+      const groups = (d.customPlans && d.customPlans[bt]) || DEF[bt] || [];
+      groups.forEach(g => {
+        const ex = combined.find(x => x.section === g.section);
+        if (ex) g.items.forEach(n => { if (!ex.items.includes(n)) ex.items.push(n); });
+        else combined.push({section:g.section, items:[...(g.items||[])]});
+      });
+    });
+    const base = combined.length ? combined : VARIANT_SECTIONS.map(s => ({section:s, items:[]}));
+    d.variants = VARIANT_IDS.map((id, idx) => ({
+      id,
+      name: 'Variante ' + (idx+1),
+      // Varianten 2–4 starten mit denselben Muskelgruppen, aber ohne Übungen
+      plan: idx === 0 ? JSON.parse(JSON.stringify(base))
+                      : base.map(g => ({section:g.section, items:[]}))
+    }));
+  }
+
+  // Fehlende Felder ergänzen
+  d.variants.forEach((v, idx) => {
+    v.id   = v.id   || VARIANT_IDS[idx] || ('v'+(idx+1));
+    v.name = v.name || ('Variante '+(idx+1));
+    if (!Array.isArray(v.plan)) v.plan = VARIANT_SECTIONS.map(s => ({section:s, items:[]}));
+    v.plan.forEach(g => { if (!Array.isArray(g.items)) g.items = []; });
+  });
+
+  // Tagestypen absichern: alles außer REST auf eine gültige Variante bringen
+  if (Array.isArray(d.types)) {
+    d.types = d.types.map(t => (t === 'rest') ? 'rest' : (VARIANT_IDS.includes(t) ? t : 'v1'));
+  }
+}
+
 function loadAll() {
   ['julian','christina'].forEach(u => {
     try {
@@ -707,15 +831,19 @@ function loadAll() {
         d.daySel          = d.daySel          || {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
         d.exerciseLibrary = d.exerciseLibrary || {push:[],pull:[],beine:[]};
         d.checkins        = d.checkins        || [];
+        // Ältere Trainingsdauern haben noch keine Kennung -> zum Löschen nachrüsten
+        d.checkins.forEach((c,ci) => { if (typeof c.ts !== 'number') c.ts = -(ci+1); });
         d.weights         = d.weights         || [];
         // Migration: Core-Sektion in bestehenden Beine-Plänen nachrüsten
         if (d.customPlans && d.customPlans.beine && !d.customPlans.beine.some(g => g.section === 'Core')) {
           d.customPlans.beine.push({section:'Core', items:['Crunches','Plank','Beinheben','Russian Twist']});
         }
+
       }
     } catch(e) {}
     try { const h=localStorage.getItem(k(u,'history'));  if(h) uHist[u]=JSON.parse(h); } catch(e) {}
     try { const sl=localStorage.getItem(k(u,'sessions'));if(sl)uSess[u]=JSON.parse(sl); } catch(e) {}
+    ensureVariants(u);
   });
 }
 
@@ -762,6 +890,7 @@ async function selectUser(user) {
   closeAll();  // offene Panels mit Inhalten des vorherigen Benutzers schließen
   activeUser = user;
   histViewU  = user;  // Verlauf-Tab auf den aktiven Benutzer stellen
+  graphFilterType = null;  // Fortschritts-Filter des vorherigen Benutzers verwerfen
   localStorage.setItem('gp7-active-user', user);
   applyTheme(user);
   const t = USER_THEMES[user];
@@ -789,6 +918,7 @@ async function selectUser(user) {
     if (activeUser !== user) return;
     if (foundCloud) {
       // Cloud is source of truth -> mirror into localStorage
+      ensureVariants(user);
       persistLocalOnly(user);
       buildAll();
     } else if (hadLocal) {
@@ -844,7 +974,7 @@ function buildWeekGrid() {
     const t=S().types[i], d=S().done[i], c=tc(t);
     g.innerHTML += `<div class="week-dot ${isToday(i)?'today':''}" style="background:${c.bg};border-color:${c.bd}">
       <span class="week-dot-label">${DAY_SHORT[i]}</span>
-      <span class="week-dot-badge" style="background:${c.bb};color:${c.co};border:1px solid ${c.bd}">${t.toUpperCase()}</span>
+      <span class="week-dot-badge" style="background:${c.bb};color:${c.co};border:1px solid ${c.bd}" title="${esc(typeName(t))}">${esc(typeLabel(t))}</span>
       <div class="week-dot-check ${d?'done':''}">${d?'<svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
     </div>`;
   });
@@ -856,15 +986,15 @@ function buildDayCards() {
     const t=S().types[i], d=S().done[i];
     const el=document.createElement('div');
     el.className=`day-card type-${t}${d?' done':''}`; el.id='card-'+i;
-    const availTypes = ['push','pull','beine','gk','rest'];  // GK für beide Benutzer
-    const btns=availTypes.map(tp=>`<button class="type-btn ${t===tp?'active-'+tp:''}" onclick="event.stopPropagation();setType(${i},'${tp}')">${tp.toUpperCase()}</button>`).join('');
+    const availTypes = availableTypes();
+    const btns=availTypes.map(tp=>`<button class="type-btn ${t===tp?'active-'+tp:''}" onclick="event.stopPropagation();setType(${i},'${tp}')" title="${esc(typeName(tp))}">${esc(typeLabel(tp))}</button>`).join('');
     el.innerHTML=`
       <div class="day-header" onclick="toggleList(${i})">
         <div class="day-header-left">
           <div class="day-check" onclick="event.stopPropagation();toggleDone(${i})">
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="day-title-wrap"><div class="day-name">${day}</div><div class="day-date">${wDate(i)}</div></div>
+          <div class="day-title-wrap"><div class="day-name">${day}</div><div class="day-date">${wDate(i)}${isVariantType(t)?' · '+esc(typeName(t)):''}</div></div>
         </div>
         <div class="day-right"><div class="type-selector">${btns}</div><button class="toggle-btn" id="toggle-${i}">↓</button></div>
       </div>
@@ -992,9 +1122,13 @@ function buildExItemHTML(ex, isDone, dayIdx, secIdx) {
 function lastExMap(type) {
   const map = {};
   // Für GK: Werte aus allen Muskelgruppen (push/pull/beine) zusammenführen
-  const matchTypes = (type === 'gk') ? ['push','pull','beine','gk'] : [type];
+  // GK: alle Muskelgruppen zusammenführen.
+  // Variante: über ALLE Trainings hinweg (null) – so steht immer der zuletzt
+  // erreichte Wert einer Übung bereit, egal in welcher Variante sie lief.
+  const matchTypes = (type === 'gk') ? ['push','pull','beine','gk']
+                   : (isVariantType(type) ? null : [type]);
   SL().forEach(session => {
-    if (matchTypes.includes(session.type)) {
+    if (matchTypes === null || matchTypes.includes(session.type)) {
       session.exercises.forEach(ex => {
         if (ex.name && ex.kg !== 'n' && ex.kg !== 'N') {
           map[ex.name] = { sets: ex.sets||'3', reps: ex.reps||'10', kg: ex.kg||'' };
@@ -1012,6 +1146,7 @@ function lastExMap(type) {
 
 // ── ADD TO EXERCISE LIBRARY ──
 function addToLibrary(type, exercises) {
+  if (!S().exerciseLibrary) S().exerciseLibrary = {};
   const lib = S().exerciseLibrary[type] || [];
   exercises.forEach(ex => {
     if (ex.name && !lib.includes(ex.name)) lib.push(ex.name);
@@ -1070,13 +1205,19 @@ function addExToSection(dayIdx, sectionIdx, name) {
   // Bei GK: in den jeweiligen Muskelgruppen-Plan (push/pull/beine) einsortieren.
   const plan = getPlan(t);
   const section = plan[sectionIdx] ? plan[sectionIdx].section : null;
-  const targetType = (t === 'gk') ? sectionType(section) : t;
-  if (!st.customPlans[targetType]) st.customPlans[targetType] = JSON.parse(JSON.stringify(DEF[targetType]||[]));
-  const tgtGroup = st.customPlans[targetType].find(g => g.section === section) || st.customPlans[targetType][0];
-  if (tgtGroup && !tgtGroup.items.includes(name)) tgtGroup.items.push(name);
-
-  // 2) Add to exercise library
-  addToLibrary(targetType, [{name}]);
+  const vv = variantById(t);
+  if (vv) {
+    // Variante: direkt in den Plan dieser Variante einsortieren
+    const g = (vv.plan||[]).find(x => x.section === section) || (vv.plan||[])[sectionIdx];
+    if (g && !g.items.includes(name)) g.items.push(name);
+    addToLibrary(t, [{name}]);
+  } else {
+    const targetType = (t === 'gk') ? sectionType(section) : t;
+    if (!st.customPlans[targetType]) st.customPlans[targetType] = JSON.parse(JSON.stringify(DEF[targetType]||[]));
+    const tgtGroup = st.customPlans[targetType].find(g => g.section === section) || st.customPlans[targetType][0];
+    if (tgtGroup && !tgtGroup.items.includes(name)) tgtGroup.items.push(name);
+    addToLibrary(targetType, [{name}]);
+  }
 
   // 3) Select it for today + add to dayEx with carry-over
   collectDay(dayIdx);
@@ -1225,9 +1366,15 @@ function commitReorder(wrap) {
   const plan = getPlan(t);
   const g = plan[secIdx]; if (!g) return;
   const section = g.section;
-  const targetType = (t === 'gk') ? sectionType(section) : t;
-  if (!st.customPlans[targetType]) st.customPlans[targetType] = JSON.parse(JSON.stringify(DEF[targetType]||[]));
-  const grp = st.customPlans[targetType].find(x => x.section === section);
+  const vv = variantById(t);
+  let grp;
+  if (vv) {
+    grp = (vv.plan||[]).find(x => x.section === section);
+  } else {
+    const targetType = (t === 'gk') ? sectionType(section) : t;
+    if (!st.customPlans[targetType]) st.customPlans[targetType] = JSON.parse(JSON.stringify(DEF[targetType]||[]));
+    grp = st.customPlans[targetType].find(x => x.section === section);
+  }
   if (!grp) return;
   // Erst aktuelle Eingaben sichern, damit getippte Werte nicht verloren gehen
   collectAll();
@@ -1362,7 +1509,7 @@ function toggleDone(i) {
   const st=S(), wasDone=st.done[i];
   st.done[i] = !wasDone;
   const t=st.types[i];
-  if (['push','pull','beine','gk'].includes(t)) {
+  if (t !== 'rest') {
     if (!wasDone) { st.gymCount++; logSess(i); }
     else          { st.gymCount=Math.max(0,st.gymCount-1); removeSess(i); }
   }
@@ -1536,7 +1683,7 @@ function renderWeightChart() {
   if (!data.length) { emptyEl.style.display='block'; canvas.style.display='none'; return; }
   emptyEl.style.display='none'; canvas.style.display='block';
 
-  const dpr=window.devicePixelRatio||1, W=canvas.parentElement.offsetWidth-40, H=190;
+  const dpr=window.devicePixelRatio||1, W=Math.max(200,(canvas.parentElement?canvas.parentElement.offsetWidth:320)-40), H=190;
   canvas.style.height=H+'px'; canvas.width=W*dpr; canvas.height=H*dpr; ctx.scale(dpr,dpr);
 
   const P={top:24,right:16,bottom:44,left:46};
@@ -1667,7 +1814,7 @@ function renderHistory() {
     const weekId  = 'w-'+weekLabel.replace(/[^a-z0-9]/gi,'_');
     const typeTags = sessions.map(s => {
       const c=tc(s.type);
-      return `<span class="history-tag" style="background:${c.bb};color:${c.co}">${s.type.toUpperCase()}</span>`;
+      return `<span class="history-tag" style="background:${c.bb};color:${c.co}">${esc(typeLabelFor(histViewU, s.type))}</span>`;
     }).join('');
 
     html += `
@@ -1688,11 +1835,13 @@ function renderHistory() {
       const sessId = weekId+'_s'+si;
       const c = tc(s.type);
       const cnt = s.exercises.filter(e=>e.name).length;
+      const ci  = checkinForSession(histViewU, s);   // passende Trainingsdauer
       html += `
           <div class="hist-session">
             <div class="hist-session-header" onclick="toggleHistSession('${sessId}')">
               <span class="hist-session-date">${s.dayName||''} ${s.date||''}</span>
-              <span class="hist-session-type" style="background:${c.bb};color:${c.co}">${s.type.toUpperCase()}</span>
+              <span class="hist-session-type" style="background:${c.bb};color:${c.co}">${esc(typeLabelFor(histViewU, s.type))}</span>
+              ${ci ? `<span class="hist-session-dur">⏱ ${fmtDur(ci.duration)}</span>` : ''}
               <span class="hist-session-count">${cnt} Übungen</span>
             </div>
             <div class="hist-exercises" id="${sessId}">`;
@@ -1703,7 +1852,7 @@ function renderHistory() {
         if (subs.length) {
           subs.forEach(sub => {
             const sc = tc(sub.type);
-            html += `<div class="hist-gk-sub"><span class="hist-session-type" style="background:${sc.bb};color:${sc.co}">${sub.type.toUpperCase()}</span></div>`;
+            html += `<div class="hist-gk-sub"><span class="hist-session-type" style="background:${sc.bb};color:${sc.co}">${esc(typeLabelFor(histViewU, sub.type))}</span></div>`;
             sub.exercises.forEach(ex => { html += exRow(ex); });
           });
         } else {
@@ -1739,52 +1888,181 @@ function toggleHistSession(id) {
 // ═══════════════════════════════════════════════════
 // PLAN EDITOR
 // ═══════════════════════════════════════════════════
+// Welche Reiter hat der aktuelle Benutzer im Plan-Editor?
+function planTabsFor() {
+  return hasVariants() ? VARIANT_IDS : ['push','pull','beine'];
+}
+
+// Übungsgruppen eines Reiters (Variante ODER klassischer Plan)
+function planGroups(type) {
+  const v = variantById(type);
+  if (v) { if (!Array.isArray(v.plan)) v.plan = []; return v.plan; }
+  if (!S().customPlans[type]) S().customPlans[type] = pCopy(type);
+  return S().customPlans[type];
+}
+
+function renderPlanTabs() {
+  const row = document.getElementById('plan-tabs');
+  if (!row) return;
+  row.innerHTML = planTabsFor().map(t =>
+    `<button class="plan-tab${t===planTab?' active-'+t:''}" onclick="switchPlanTab('${t}')" title="${esc(typeName(t))}">${esc(typeLabel(t))}</button>`
+  ).join('');
+}
+
 function switchPlanTab(type) {
+  const tabs = planTabsFor();
+  if (!tabs.includes(type)) type = tabs[0];
   planTab = type;
-  document.querySelectorAll('.plan-tab').forEach((tab,i) => {
-    tab.className='plan-tab'+((['push','pull','beine'][i])===type?' active-'+type:'');
-  });
-  ['push','pull','beine'].forEach(t => document.getElementById('plan-'+t).classList.toggle('active',t===type));
+  renderPlanTabs();
   renderPlanEditor(type);
 }
 
+// Vorschläge für eine Muskelgruppe: gleiche Sektion aus anderen Varianten
+// und aus den klassischen Plänen – zum Antippen statt Tippen.
+function planSuggestions(type, gi) {
+  const gs = planGroups(type); const g = gs && gs[gi];
+  if (!g) return [];
+  const have = new Set(g.items);
+  const out = [];
+  const add = n => { if (n && !have.has(n) && !out.includes(n)) out.push(n); };
+  getVariants().forEach(v => {
+    if (v.id === type) return;
+    (v.plan||[]).forEach(x => { if (x.section === g.section) x.items.forEach(add); });
+  });
+  ['push','pull','beine'].forEach(bt => {
+    ((S().customPlans && S().customPlans[bt]) || DEF[bt] || [])
+      .forEach(x => { if (x.section === g.section) x.items.forEach(add); });
+  });
+  return out.slice(0, 20);
+}
+
 function renderPlanEditor(type) {
-  const con    = document.getElementById('plan-'+type);
-  const groups = S().customPlans[type] || DEF[type] || [];
-  const other  = activeUser==='julian'?'christina':'julian';
-  let html='';
+  const con = document.getElementById('plan-body');
+  if (!con) return;
+  const v      = variantById(type);
+  const groups = planGroups(type);
+  let html = '';
+
+  // Varianten: Name frei änderbar
+  if (v) {
+    html += `<div class="plan-name-row">
+      <span class="plan-name-lbl">Name der Variante</span>
+      <input class="plan-name-input" value="${esc(v.name||'')}" maxlength="20" placeholder="z.B. Oberkörper"
+        oninput="updVariantName('${type}',this.value)"/>
+    </div>`;
+  }
+
   groups.forEach((g,gi) => {
-    html += `<div class="plan-section-block"><span class="plan-section-name">${g.section}</span>`;
+    html += `<div class="plan-section-block">
+      <div class="plan-sec-head">
+        <span class="plan-section-name">${esc(g.section)}</span>
+        ${v ? `<button class="plan-sec-del" onclick="delPlanSection('${type}',${gi})" title="Muskelgruppe entfernen">✕</button>` : ''}
+      </div>`;
+    if (!g.items.length) html += `<div class="plan-empty-sec">Noch keine Übungen.</div>`;
     g.items.forEach((item,ii) => {
       html += `<div class="plan-exercise-row"><input class="plan-ex-input" value="${esc(item)}" oninput="updPlan('${type}',${gi},${ii},this.value)" placeholder="Übungsname"/><button class="plan-del-btn" onclick="delPlan('${type}',${gi},${ii})">✕</button></div>`;
     });
-    html += `<div class="plan-add-ex"><input id="nex-${type}-${gi}" placeholder="Neue Übung…" onkeydown="if(event.key==='Enter')addPlan('${type}',${gi})"/><button onclick="addPlan('${type}',${gi})">+ Add</button></div></div>`;
+    html += `<div class="plan-add-ex"><input id="nex-${type}-${gi}" placeholder="Neue Übung…" onkeydown="if(event.key==='Enter')addPlan('${type}',${gi})"/><button onclick="addPlan('${type}',${gi})">+ Add</button></div>`;
+    if (v) {
+      const sug = planSuggestions(type, gi);
+      if (sug.length) {
+        html += `<div class="plan-suggest">` + sug.map(n =>
+          `<button class="plan-suggest-chip" onclick="addSuggestion('${type}',${gi},'${jsq(n)}')">+ ${esc(n)}</button>`
+        ).join('') + `</div>`;
+      }
+    }
+    html += `</div>`;
   });
-  html += `<div class="plan-copy-row"><button class="plan-copy-btn" onclick="copyPlanFrom('${type}','${other}')">📋 Von ${USER_THEMES[other].label} übernehmen</button></div>`;
+
+  if (v) {
+    html += `<div class="plan-addsec-row"><button class="plan-addsec-btn" onclick="addPlanSection('${type}')">+ Muskelgruppe hinzufügen</button></div>`;
+    const others = getVariants().filter(x => x.id !== type);
+    if (others.length) {
+      html += `<div class="plan-copy-row">
+        <select class="graph-ex-select" style="margin:0;width:100%" onchange="if(this.value)copyVariantFrom('${type}',this.value);this.value='';">
+          <option value="">📋 Übungen von anderer Variante übernehmen…</option>
+          ${others.map(o => `<option value="${o.id}">${esc(o.name||o.id)}</option>`).join('')}
+        </select></div>`;
+    }
+  } else {
+    const other = activeUser==='julian'?'christina':'julian';
+    if (!hasVariants(other)) {
+      html += `<div class="plan-copy-row"><button class="plan-copy-btn" onclick="copyPlanFrom('${type}','${other}')">📋 Von ${USER_THEMES[other].label} übernehmen</button></div>`;
+    }
+  }
+
   html += `<div class="plan-save-row"><button class="plan-save-btn" onclick="savePlan('${type}')">✓ Plan speichern & anwenden</button></div>`;
   con.innerHTML = html;
 }
 
 const pCopy = type => JSON.parse(JSON.stringify(S().customPlans[type]||DEF[type]||[]));
-function updPlan(type,gi,ii,val) { if(!S().customPlans[type])S().customPlans[type]=pCopy(type); S().customPlans[type][gi].items[ii]=val; }
-function delPlan(type,gi,ii) { if(!S().customPlans[type])S().customPlans[type]=pCopy(type); S().customPlans[type][gi].items.splice(ii,1); renderPlanEditor(type); }
+
+function updVariantName(vid, val) {
+  const v = variantById(vid); if (!v) return;
+  v.name = (val||'').trim() || ('Variante '+(VARIANT_IDS.indexOf(vid)+1));
+  autoSave();
+  renderPlanTabs();
+  buildAll();
+}
+
+function addPlanSection(type) {
+  const v = variantById(type); if (!v) return;
+  const name = (prompt('Name der Muskelgruppe (z.B. Brust, Waden):')||'').trim();
+  if (!name) return;
+  if (v.plan.some(g => g.section.toLowerCase() === name.toLowerCase())) { alert('Diese Muskelgruppe gibt es schon.'); return; }
+  v.plan.push({section:name, items:[]});
+  autoSave(); renderPlanEditor(type);
+}
+
+function delPlanSection(type, gi) {
+  const v = variantById(type); if (!v || !v.plan[gi]) return;
+  const g = v.plan[gi];
+  if (g.items.length && !confirm('„'+g.section+'" mit '+g.items.length+' Übungen entfernen?')) return;
+  v.plan.splice(gi,1);
+  autoSave(); renderPlanEditor(type);
+}
+
+function addSuggestion(type, gi, name) {
+  const gs = planGroups(type); if (!gs || !gs[gi]) return;
+  if (!gs[gi].items.includes(name)) gs[gi].items.push(name);
+  autoSave(); renderPlanEditor(type);
+}
+
+function updPlan(type,gi,ii,val) { const gs=planGroups(type); if(gs&&gs[gi]) gs[gi].items[ii]=val; autoSave(); }
+function delPlan(type,gi,ii)     { const gs=planGroups(type); if(gs&&gs[gi]) gs[gi].items.splice(ii,1); autoSave(); renderPlanEditor(type); }
 function addPlan(type,gi) {
   const inp=document.getElementById(`nex-${type}-${gi}`), val=inp?.value?.trim(); if(!val) return;
-  if(!S().customPlans[type])S().customPlans[type]=pCopy(type);
-  S().customPlans[type][gi].items.push(val); inp.value=''; renderPlanEditor(type);
+  const gs=planGroups(type); if(!gs||!gs[gi]) return;
+  if (!gs[gi].items.includes(val)) gs[gi].items.push(val);
+  inp.value=''; autoSave(); renderPlanEditor(type);
 }
+
+function copyVariantFrom(type, srcId) {
+  const v = variantById(type), src = variantById(srcId);
+  if (!v || !src) return;
+  if (!confirm('Übungen von „'+(src.name||srcId)+'" übernehmen? Der aktuelle Inhalt wird ersetzt.')) return;
+  v.plan = JSON.parse(JSON.stringify(src.plan||[]));
+  autoSave(); renderPlanEditor(type);
+}
+
 function copyPlanFrom(type,fromUser) {
   S().customPlans[type]=JSON.parse(JSON.stringify(uData[fromUser]?.customPlans?.[type]||DEF[type]||[]));
   renderPlanEditor(type);
   alert(`Plan von ${USER_THEMES[fromUser].label} übernommen. Klicke Speichern zum Bestätigen.`);
 }
+
 function savePlan(type) {
+  collectAll();              // getippte Werte aller Tage zuerst sichern
+  clearTimeout(saveTimer);   // ausstehendes Auto-Speichern verwerfen
   DAYS.forEach((_,i) => {
-    // Tage dieses Typs zurücksetzen – GK-Tage auch, da sie alle Pläne kombinieren
-    if (S().types[i]===type || S().types[i]==='gk') { S().dayEx[i]=null; S().daySel[i]=null; }
+    // Tage dieses Typs zurücksetzen – bei Julian auch GK, da es alle Pläne kombiniert
+    const t = S().types[i];
+    if (t===type || (!hasVariants() && t==='gk')) { S().dayEx[i]=null; S().daySel[i]=null; }
   });
-  saveNow(); buildAll();
-  const btn=document.querySelector(`#plan-${type} .plan-save-btn`);
+  // Erst neu aufbauen, dann speichern (sonst holt collectAll die alten Zeilen zurück)
+  buildAll();
+  persist();
+  const btn=document.querySelector('#plan-body .plan-save-btn');
   if(btn){btn.textContent='✓ Gespeichert!';setTimeout(()=>btn.textContent='✓ Plan speichern & anwenden',1500);}
 }
 
@@ -1796,9 +2074,11 @@ let graphFilterType = null; // null = all, 'push'/'pull'/'beine'
 function renderGraphFilters() {
   const row = document.getElementById('graph-filter-row');
   if (!row) return;
-  const filters = [{label:'Alle',val:null},{label:'PUSH',val:'push'},{label:'PULL',val:'pull'},{label:'BEINE',val:'beine'}];
+  const filters = [{label:'Alle',val:null}];
+  if (hasVariants()) VARIANT_IDS.forEach(id => filters.push({label: typeLabel(id), val: id}));
+  else ['push','pull','beine'].forEach(t => filters.push({label: t.toUpperCase(), val: t}));
   row.innerHTML = filters.map(f =>
-    `<button class="graph-filter-btn${graphFilterType===f.val?' active':''}" onclick="setGraphFilter(${f.val===null?'null':"'"+f.val+"'"})">${f.label}</button>`
+    `<button class="graph-filter-btn${graphFilterType===f.val?' active':''}" onclick="setGraphFilter(${f.val===null?'null':"'"+f.val+"'"})">${esc(f.label)}</button>`
   ).join('');
 }
 
@@ -1812,10 +2092,11 @@ function getExGroups(filterType) {
   // Returns [{section, items[]}] for building optgroups
   const groups = [];
   const seen   = new Set();
-  const types  = filterType ? [filterType] : ['push','pull','beine'];
+  const types  = filterType ? [filterType]
+               : (hasVariants() ? VARIANT_IDS : ['push','pull','beine']);
 
   types.forEach(t => {
-    const plan = S().customPlans[t] || DEF[t] || [];
+    const plan = getPlan(t);
     plan.forEach(g => {
       const icon  = SECTION_ICONS[g.section] || g.section;
       const items = g.items.filter(n => !seen.has(n));
@@ -1827,8 +2108,10 @@ function getExGroups(filterType) {
   // Add library exercises not in plan
   const libExtra = [];
   const planAll  = groups.flatMap(g => g.items);
-  types.forEach(t => {
-    (S().exerciseLibrary[t]||[]).forEach(n => {
+  // Ohne Filter alle Bibliotheks-Schlüssel durchsuchen (auch alte push/pull/beine)
+  const libKeys = filterType ? [filterType] : Object.keys(S().exerciseLibrary || {});
+  libKeys.forEach(t => {
+    ((S().exerciseLibrary||{})[t]||[]).forEach(n => {
       if (!planAll.includes(n) && !libExtra.includes(n)) libExtra.push(n);
     });
   });
@@ -1892,7 +2175,7 @@ function renderGraph() {
   }
 
   emptyEl.style.display='none'; canvas.style.display='block';
-  const dpr=window.devicePixelRatio||1, W=canvas.parentElement.offsetWidth-40, H=190;
+  const dpr=window.devicePixelRatio||1, W=Math.max(200,(canvas.parentElement?canvas.parentElement.offsetWidth:320)-40), H=190;
   canvas.style.height=H+'px'; canvas.width=W*dpr; canvas.height=H*dpr; ctx.scale(dpr,dpr);
 
   const P={top:24,right:16,bottom:44,left:46};
@@ -1946,11 +2229,16 @@ function renderGraph() {
 // ═══════════════════════════════════════════════════
 function resetWeek() {
   if (!confirm('Woche zurücksetzen?')) return;
+  clearTimeout(saveTimer);   // ausstehendes Auto-Speichern verwerfen
   S().done   = [false,false,false,false,false,false,false];
   S().dehnen = [false,false];
   S().dayEx  = {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
   S().daySel = {0:null,1:null,2:null,3:null,4:null,5:null,6:null};
-  saveNow(); buildAll();
+  // WICHTIG: erst die Ansicht neu aufbauen, dann speichern.
+  // Sonst würden die noch sichtbaren alten Übungszeilen zurückgelesen
+  // und der Reset wäre sofort wieder rückgängig gemacht.
+  buildAll();
+  persist();
 }
 
 function isToday(i) { const d=new Date().getDay(); return (d===0?6:d-1)===i; }
@@ -1962,8 +2250,8 @@ function wDate(i) {
   return tg.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit'});
 }
 
-function wLabel() {
-  const t=new Date(), day=t.getDay(), m=new Date(t);
+function wLabel(ref) {
+  const t=ref?new Date(ref):new Date(), day=t.getDay(), m=new Date(t);
   m.setDate(t.getDate()+(day===0?-6:1-day));
   const s=new Date(m); s.setDate(m.getDate()+6);
   return m.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit'})+' – '+s.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'});
@@ -1971,7 +2259,7 @@ function wLabel() {
 
 function tc(t) {
   const m={push:{bg:'#ff8c00',bd:'#e07000',co:'#7a3500',bb:'#ffb347'},pull:{bg:'#1a7fd4',bd:'#0f5fa0',co:'#072d52',bb:'#5aaff0'},beine:{bg:'#18a84a',bd:'#0f7a34',co:'#063d1a',bb:'#4dcc7a'},rest:{bg:'#e8e8e6',bd:'#d0d0cc',co:'#aaaaaa',bb:'#dedede'},gk:{bg:'#7b5cd6',bd:'#5a3eb0',co:'#fff',bb:'#b9a4ec'}};
-  return m[t]||m.rest;
+  return m[t] || VARIANT_COLORS[t] || m.rest;
 }
 
 // ═══════════════════════════════════════════════════
@@ -1995,12 +2283,20 @@ function stopTimer() {
   if (!timerActive || !timerStart) return;
   const end = new Date();
   const mins = Math.round((end - timerStart)/60000);
+  // Trainingstag aus der STARTZEIT ableiten, damit die Dauer dem
+  // richtigen Wochentag und Training zugeordnet werden kann.
+  const dow      = timerStart.getDay();          // 0 = Sonntag
+  const dayIndex = (dow === 0 ? 6 : dow - 1);    // 0 = Montag
   S().checkins = S().checkins || [];
   S().checkins.unshift({
-    date:     timerStart.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'}),
-    startStr: timerStart.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}),
-    endStr:   end.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}),
-    duration: mins,
+    ts:        timerStart.getTime(),
+    date:      timerStart.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    startStr:  timerStart.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}),
+    endStr:    end.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}),
+    duration:  mins,
+    dayIndex,
+    dayName:   DAYS[dayIndex],
+    weekLabel: wLabel(timerStart),
   });
   if (S().checkins.length > 200) S().checkins.pop();
   localStorage.removeItem('gp7-timer');
@@ -2008,7 +2304,7 @@ function stopTimer() {
   timerActive=false; timerStart=null;
   updateTimerUI();
   persist();  // speichert lokal + Cloud
-  alert('🏋️ Training beendet!\nDauer: '+Math.floor(mins/60)+'h '+(mins%60)+'min');
+  alert('🏋️ Training beendet!\n'+DAYS[dayIndex]+' · '+fmtDur(mins));
 }
 window.startTimer = startTimer;
 window.stopTimer  = stopTimer;
@@ -2060,11 +2356,70 @@ function updateTimerUI() {
   renderTimerHistory();
 }
 
+// Dauer lesbar formatieren
+function fmtDur(mins) {
+  const m = Math.max(0, Math.round(mins||0));
+  return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'min';
+}
+
+// Welcher Trainingstyp gehört zu einer Trainingsdauer?
+// Zuerst das abgeschlossene Training des Tages, sonst der aktuell gewählte Tagestyp.
+function typeForCheckin(c) {
+  if (c.dayIndex == null) return null;
+  const s = (SL()||[]).find(x => x.dayIndex===c.dayIndex && x.weekLabel===c.weekLabel && !x.fromGK);
+  if (s) return s.type;
+  if (c.weekLabel === S().weekLabel) {
+    const t = S().types[c.dayIndex];
+    if (t && t !== 'rest') return t;
+  }
+  return null;
+}
+
+// Passende Trainingsdauer zu einem Training im Verlauf (auch für den anderen Benutzer)
+function checkinForSession(user, s) {
+  const cs = (uData[user] && uData[user].checkins) || [];
+  return cs.find(c => c.dayIndex === s.dayIndex && c.weekLabel === s.weekLabel) || null;
+}
+
+// Trainingsdauer löschen (z.B. wenn das Beenden vergessen wurde)
+function deleteCheckin(ts) {
+  const list = S().checkins || [];
+  const c = list.find(x => x.ts === ts);
+  if (!c) return;
+  if (!confirm('Trainingsdauer vom '+c.date+' ('+fmtDur(c.duration)+') löschen?')) return;
+  S().checkins = list.filter(x => x.ts !== ts);
+  persist();
+  renderTimerHistory();
+}
+window.deleteCheckin = deleteCheckin;
+
 function renderTimerHistory() {
   const el=document.getElementById('ci-hist-list'); if(!el)return;
   const list=(S().checkins)||[];
   if(!list.length){el.innerHTML='<div class="history-empty">Noch keine Trainings.</div>';return;}
-  el.innerHTML=list.map(c=>'<div class="ci-hist-item"><div class="ci-hist-dot"></div><div class="ci-hist-info"><div class="ci-hist-date">'+c.date+'</div><div class="ci-hist-time">'+c.startStr+' – '+c.endStr+'</div></div><div class="ci-hist-dur">'+Math.floor(c.duration/60)+'h '+(c.duration%60)+'min</div></div>').join('');
+
+  // Durchschnittsdauer über alle Einträge
+  const summe = list.reduce((a,c)=>a+(c.duration||0),0);
+  const schnitt = Math.round(summe/list.length);
+  let html = '<div class="ci-avg">Ø '+fmtDur(schnitt)+' · '+list.length+' Training'+(list.length!==1?'s':'')+'</div>';
+
+  html += list.map(c => {
+    const t = typeForCheckin(c);
+    const badge = t ? (()=>{ const col=tc(t); return '<span class="ci-hist-type" style="background:'+col.bb+';color:'+col.co+'">'+esc(typeLabel(t))+'</span>'; })() : '';
+    const lang = (c.duration||0) >= 240;   // ab 4h: vermutlich Beenden vergessen
+    const tag  = c.dayName ? esc(c.dayName)+' · ' : '';
+    return '<div class="ci-hist-item">'
+      + '<div class="ci-hist-dot"></div>'
+      + '<div class="ci-hist-info">'
+      +   '<div class="ci-hist-date">'+tag+esc(c.date)+badge+'</div>'
+      +   '<div class="ci-hist-time">'+esc(c.startStr)+' – '+esc(c.endStr)+'</div>'
+      + '</div>'
+      + '<div class="ci-hist-dur'+(lang?' long':'')+'"'+(lang?' title="Ungewöhnlich lang – Beenden vergessen?"':'')+'>'+fmtDur(c.duration)+'</div>'
+      + '<button class="weight-del" onclick="deleteCheckin('+c.ts+')" title="Trainingsdauer löschen">✕</button>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = html;
 }
 
 let _reloading = false;
